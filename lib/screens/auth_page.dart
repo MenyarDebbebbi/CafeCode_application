@@ -300,8 +300,10 @@ class _AuthPageState extends State<AuthPage> with WidgetsBindingObserver {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.blue.shade400,
-              Colors.blue.shade800,
+              Color(0xFFC8B784)
+              ,
+              Color(0xFFC8B784)
+              ,
             ],
           ),
         ),
@@ -328,8 +330,9 @@ class _AuthPageState extends State<AuthPage> with WidgetsBindingObserver {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+
                           const Text(
-                            "Pointage App",
+                            "EchoLang",
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -385,14 +388,15 @@ class _AuthPageState extends State<AuthPage> with WidgetsBindingObserver {
                                         strokeWidth: 3,
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                                Colors.blue),
+                                                Color(0xFFC8B784)
+                                            ),
                                       ),
                                     ),
                                   )
                                 : const Icon(
                                     Icons.fingerprint,
                                     size: 80,
-                                    color: Colors.blue,
+                                    color: Color(0xFFF5F5DC),
                                   ),
                           ),
                         ),
@@ -458,7 +462,7 @@ class _AuthPageState extends State<AuthPage> with WidgetsBindingObserver {
                                       style: TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.blue.shade800,
+                                        color: Color(0xFFD9CBA3),
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
@@ -541,7 +545,9 @@ class _AuthPageState extends State<AuthPage> with WidgetsBindingObserver {
                                             ? null
                                             : _retryAuthentication,
                                         style: TextButton.styleFrom(
-                                          foregroundColor: Colors.blue.shade700,
+                                          foregroundColor:Color(0xFFC8B784)
+
+                                          ,
                                         ),
                                         child: const Text(
                                           'Réessayer l\'authentification',

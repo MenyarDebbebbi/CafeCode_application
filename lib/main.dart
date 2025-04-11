@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'screens/auth_page.dart';
 import 'screens/home_screen.dart';
 import 'screens/parametres_screen.dart';
-import 'screens/products_screen.dart';
 import 'screens/certificates_screen.dart';
 
 void main() async {

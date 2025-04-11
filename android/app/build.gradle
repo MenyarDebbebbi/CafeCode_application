@@ -5,6 +5,56 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+task copyAssets {
+    doLast {
+        copy {
+            from '../../assets/images/logo.png'
+            into 'src/main/res/mipmap-xxxhdpi'
+            rename 'logo.png', 'ic_launcher.png'
+        }
+        copy {
+            from '../../assets/images/logo.png'
+            into 'src/main/res/mipmap-xxhdpi'
+            rename 'logo.png', 'ic_launcher.png'
+        }
+        copy {
+            from '../../assets/images/logo.png'
+            into 'src/main/res/mipmap-xhdpi'
+            rename 'logo.png', 'ic_launcher.png'
+        }
+        copy {
+            from '../../assets/images/logo.png'
+            into 'src/main/res/mipmap-hdpi'
+            rename 'logo.png', 'ic_launcher.png'
+        }
+        copy {
+            from '../../assets/images/logo.png'
+            into 'src/main/res/mipmap-mdpi'
+            rename 'logo.png', 'ic_launcher.png'
+        }
+        copy {
+            from '../../assets/images/logo.png'
+            into 'src/main/res/drawable'
+            rename 'logo.png', 'launch_image.png'
+        }
+    }
+}
+
+preBuild.dependsOn copyAssets
+
 android {
     namespace = "com.project.menyarproject"
     compileSdk = 35
@@ -25,8 +75,8 @@ android {
 
     defaultConfig {
         applicationId = "com.project.menyarproject"
-        minSdk = 23
-        targetSdk = 34
+        minSdk = 21
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled true
@@ -52,4 +102,5 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.7.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.android.material:material:1.11.0'
+    implementation 'com.google.mlkit:text-recognition:16.0.0'
 }
