@@ -3,9 +3,9 @@ import 'package:intl/intl.dart';
 import '../services/auth_service.dart';
 import 'pointage_screen.dart';
 import 'parametres_screen.dart';
-import 'products_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'study_screen.dart';
+import 'camera_translation_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String firstName;
@@ -98,6 +98,95 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showLanguageSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choisir la langue cible'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text('Français'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraTranslationScreen(
+                      targetLanguage: 'fr',
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text('Anglais'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraTranslationScreen(
+                      targetLanguage: 'en',
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text('Espagnol'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraTranslationScreen(
+                      targetLanguage: 'es',
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text('Arabe'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraTranslationScreen(
+                      targetLanguage: 'ar',
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text('Italien'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraTranslationScreen(
+                      targetLanguage: 'it',
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -116,6 +205,54 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFFBE9E7E),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  // TODO: Implémenter la logique des notifications
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Aucune nouvelle notification'),
+                      backgroundColor: Color(0xFFBE9E7E),
+                    ),
+                  );
+                },
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 14,
+                    minHeight: 14,
+                  ),
+                  child: const Text(
+                    '2',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // TODO: Implémenter la recherche
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       drawer: Drawer(
         child: Container(
@@ -127,6 +264,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Color(0xFFBE9E7E),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
                 ),
                 child: SafeArea(
                   child: Padding(
@@ -156,11 +297,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Apprenant',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withOpacity(0.8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'Apprenant',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
                           ),
                         ),
                       ],
@@ -187,6 +338,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => const StudyScreen(),
                     ),
                   );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Traduction par Caméra'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showLanguageSelectionDialog();
                 },
               ),
               ListTile(
@@ -240,30 +399,63 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // En-tête avec statistiques
                 Container(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Bonjour, ${widget.firstName}',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A4A4A),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Bonjour, ${widget.firstName}',
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4A4A4A),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFFBE9E7E).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  'Continuez votre apprentissage',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xFFBE9E7E),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFBE9E7E).withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.emoji_events,
+                              color: Color(0xFFBE9E7E),
+                              size: 32,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Continuez votre apprentissage',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF666666),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Cartes de statistiques
+                      const SizedBox(height: 32),
+                      // Cartes de statistiques avec animation d'ombre
                       Row(
                         children: [
                           _buildStatCard(
@@ -303,15 +495,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 // Section des langues en cours
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    'Continuer l\'apprentissage',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A4A4A),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Continuer l\'apprentissage',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A4A4A),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // TODO: Implémenter la navigation vers tous les cours
+                        },
+                        child: const Text(
+                          'Voir tout',
+                          style: TextStyle(
+                            color: Color(0xFFBE9E7E),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -320,6 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
+                    physics: const BouncingScrollPhysics(),
                     children: [
                       _buildLanguageCard(
                         'Français',
@@ -344,19 +554,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 24),
                 // Section des derniers certificats
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    'Derniers certificats',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A4A4A),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Derniers certificats',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A4A4A),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // TODO: Implémenter la navigation vers tous les certificats
+                        },
+                        child: const Text(
+                          'Voir tout',
+                          style: TextStyle(
+                            color: Color(0xFFBE9E7E),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
                 _buildCertificatesList(),
+                const SizedBox(height: 24),
               ],
             ),
           ),
