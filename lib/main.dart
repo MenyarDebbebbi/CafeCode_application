@@ -5,6 +5,12 @@ import 'screens/auth_page.dart';
 import 'screens/home_screen.dart';
 import 'screens/parametres_screen.dart';
 import 'screens/certificates_screen.dart';
+import 'screens/language_selection_screen.dart';
+import 'screens/studies_screen.dart';
+import 'screens/lessons_screen.dart';
+import 'screens/lesson_screen.dart';
+import 'screens/data_initialization_screen.dart';
+import 'screens/camera_translation_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -133,6 +139,47 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(firstName: '', lastName: ''),
         '/parametres': (context) => const ParametresScreen(),
         '/certificates': (context) => const CertificatesScreen(),
+        '/languages': (context) => const LanguageSelectionScreen(),
+        '/data-init': (context) => const DataInitializationScreen(),
+        '/camera-translation': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return CameraTranslationScreen(
+            targetLanguage: args['targetLanguage'] as String,
+          );
+        },
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/studies') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => StudiesScreen(
+              languageId: args['languageId'] as String,
+            ),
+          );
+        }
+        if (settings.name == '/lessons') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => LessonsScreen(
+              theme: args['theme'] as String,
+              lessons: (args['lessons'] as List)
+                  .map((lesson) => Map<String, dynamic>.from(lesson as Map))
+                  .toList(),
+              languageId: args['languageId'] as String,
+            ),
+          );
+        }
+        if (settings.name == '/lesson') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => LessonScreen(
+              lesson: args['lesson'] as Map<String, dynamic>,
+              languageId: args['languageId'] as String,
+            ),
+          );
+        }
+        return null;
       },
     );
   }
