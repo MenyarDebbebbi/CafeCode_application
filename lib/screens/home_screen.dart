@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/theme_service.dart';
 import 'pointage_screen.dart';
 import 'parametres_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'camera_translation_screen.dart';
+import 'chatbot_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String firstName;
@@ -372,9 +375,11 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.dark_mode),
+            icon: Icon(context.watch<ThemeService>().isDarkMode
+                ? Icons.light_mode
+                : Icons.dark_mode),
             onPressed: () {
-              // TODO: Implémenter le mode sombre
+              context.read<ThemeService>().toggleTheme();
             },
           ),
         ],
@@ -464,7 +469,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: const Icon(Icons.chat),
                 title: const Text('ChatBot'),
                 onTap: () {
-                  // TODO: Implémenter la navigation vers le ChatBot
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChatBotScreen(),
+                    ),
+                  );
                 },
               ),
               ListTile(
@@ -642,7 +653,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Implémenter la navigation vers le ChatBot
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChatBotScreen(),
+            ),
+          );
         },
         backgroundColor: const Color(0xFFBE9E7E),
         child: const Icon(Icons.chat, color: Colors.white),

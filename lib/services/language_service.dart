@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import '../models/language.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class LanguageService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -45,35 +47,284 @@ class LanguageService {
         'name': 'Français',
         'code': 'fr',
         'flag': '🇫🇷',
-        'description': 'Apprenez le français',
+        'description': 'Apprenez le français avec des leçons interactives',
+        'level': 'Débutant'
       });
 
       // Créer les catégories pour le français
       final frenchCategories = [
         {
           'name': 'Les bases',
-          'description': 'Apprenez les fondamentaux du français',
+          'description': 'Commencez votre apprentissage avec les fondamentaux',
           'order': 1,
           'lessons': [
             {
-              'title': 'L\'alphabet',
-              'description': 'Apprenez l\'alphabet français',
-              'duration': '15 min',
+              'title': 'L\'alphabet et la prononciation',
+              'description':
+                  'Maîtrisez l\'alphabet français et ses sons uniques pour une prononciation parfaite',
+              'duration': 20,
               'xp': 50,
               'level': 'A1',
-              'content': 'A, B, C, D...',
-              'completed': false,
-              'progress': 0.0
+              'content': [
+                {
+                  'type': 'text',
+                  'value':
+                      'L\'alphabet français comporte 26 lettres, comme l\'alphabet latin.'
+                },
+                {
+                  'type': 'image',
+                  'url': 'assets/images/french/alphabet.jpg',
+                  'caption': 'L\'alphabet français'
+                },
+                {
+                  'type': 'audio',
+                  'url': 'assets/audio/french/alphabet.mp3',
+                  'caption': 'Écoutez la prononciation de l\'alphabet'
+                }
+              ],
+              'vocabulary': {
+                'title': 'L\'alphabet',
+                'words': [
+                  {
+                    'word': 'A [a]',
+                    'translation': 'comme dans "chat"',
+                    'example': 'ami, table, papa',
+                    'image': 'assets/images/french/vocabulary/ami.jpg',
+                    'audio': 'assets/audio/french/vocabulary/a.mp3'
+                  },
+                  {
+                    'word': 'E [ə]',
+                    'translation': 'comme dans "le"',
+                    'example': 'petit, demain, je',
+                    'image': 'assets/images/french/vocabulary/petit.jpg',
+                    'audio': 'assets/audio/french/vocabulary/e.mp3'
+                  }
+                ]
+              },
+              'questions': [
+                {
+                  'type': 'multiple_choice',
+                  'question':
+                      'Quelle est la prononciation correcte de la lettre "E" ?',
+                  'options': ['[a]', '[ə]', '[i]', '[o]'],
+                  'correctAnswer': 1,
+                  'explanation': 'La lettre "E" se prononce [ə] comme dans "le"'
+                },
+                {
+                  'type': 'audio_recognition',
+                  'question': 'Écoutez et choisissez la lettre correspondante',
+                  'audio': 'assets/audio/french/questions/letter_a.mp3',
+                  'options': ['A', 'E', 'I', 'O'],
+                  'correctAnswer': 0
+                }
+              ],
+              'exercises': [
+                {
+                  'type': 'pronunciation',
+                  'title': 'Répétez après l\'audio',
+                  'items': [
+                    {
+                      'text': 'bonjour',
+                      'audio': 'assets/audio/french/exercises/bonjour.mp3',
+                      'image': 'assets/images/french/exercises/bonjour.jpg'
+                    }
+                  ]
+                }
+              ]
             },
             {
-              'title': 'Les nombres',
-              'description': 'Apprenez à compter en français',
-              'duration': '20 min',
+              'title': 'Les salutations',
+              'description':
+                  'Apprenez à saluer et à vous présenter en français',
+              'duration': 25,
               'xp': 75,
               'level': 'A1',
-              'content': 'Un, deux, trois...',
+              'content': [
+                {
+                  'type': 'text',
+                  'value':
+                      'Les salutations sont essentielles dans la culture française.'
+                },
+                {
+                  'type': 'image',
+                  'url': 'assets/images/french/greetings.jpg',
+                  'caption': 'Les différentes façons de se saluer en français'
+                },
+                {
+                  'type': 'video',
+                  'url': 'assets/videos/french/greetings.mp4',
+                  'caption': 'Regardez comment les Français se saluent'
+                }
+              ],
+              'vocabulary': {
+                'title': 'Les salutations',
+                'words': [
+                  {
+                    'word': 'Bonjour',
+                    'translation': 'Hello',
+                    'context': 'Formel, utilisé toute la journée',
+                    'example': 'Bonjour, comment allez-vous ?',
+                    'image': 'assets/images/french/vocabulary/bonjour.jpg',
+                    'audio': 'assets/audio/french/vocabulary/bonjour.mp3'
+                  }
+                ]
+              },
+              'questions': [
+                {
+                  'type': 'multiple_choice',
+                  'question': 'Quelle salutation est formelle ?',
+                  'options': ['Salut', 'Bonjour', 'Coucou', 'Hey'],
+                  'correctAnswer': 1,
+                  'explanation':
+                      'Bonjour est la salutation formelle standard en français'
+                },
+                {
+                  'type': 'image_matching',
+                  'question': 'Associez l\'image à la bonne salutation',
+                  'images': [
+                    'assets/images/french/questions/formal_greeting.jpg',
+                    'assets/images/french/questions/casual_greeting.jpg'
+                  ],
+                  'options': ['Bonjour', 'Salut'],
+                  'correctAnswers': [0, 1]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          'name': 'Voyage et Hébergement',
+          'description': 'Apprenez à communiquer pendant vos voyages',
+          'order': 3,
+          'lessons': [
+            {
+              'title': 'À l\'hôtel',
+              'description':
+                  'Vocabulaire et expressions utiles pour séjourner à l\'hôtel',
+              'duration': 30,
+              'xp': 75,
+              'level': 'A2',
+              'content': [
+                'Faire une réservation',
+                'Check-in et check-out',
+                'Les services de l\'hôtel'
+              ],
+              'vocabulary': {
+                'title': 'Vocabulaire de l\'hôtel',
+                'words': [
+                  {
+                    'word': 'Réservation',
+                    'translation': 'Booking',
+                    'example': 'Je voudrais faire une réservation.',
+                    'audioFile': 'audio/hotel/reservation.mp3',
+                    'hasAudio': true,
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Chambre simple',
+                    'translation': 'Single room',
+                    'example': 'Je souhaite une chambre simple.',
+                    'audioFile': 'audio/hotel/chambre_simple.mp3',
+                    'hasAudio': true,
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Service de chambre',
+                    'translation': 'Room service',
+                    'example': 'Puis-je commander le service de chambre ?',
+                    'audioFile': 'audio/hotel/service_chambre.mp3',
+                    'hasAudio': true,
+                    'icon': Icons.volume_up
+                  }
+                ]
+              },
               'completed': false,
-              'progress': 0.0
+              'progress': 0
+            }
+          ]
+        },
+        {
+          'name': 'Nourriture et Restaurant',
+          'description':
+              'Découvrez la gastronomie française et apprenez à commander au restaurant',
+          'order': 2,
+          'lessons': [
+            {
+              'title': 'Au restaurant',
+              'description':
+                  'Maîtrisez l\'art de commander et de dîner dans un restaurant français',
+              'duration': 35,
+              'xp': 80,
+              'level': 'A2',
+              'content': [
+                {
+                  'type': 'text',
+                  'value':
+                      'La gastronomie française est célèbre dans le monde entier.'
+                },
+                {
+                  'type': 'image',
+                  'url': 'assets/images/french/restaurant.jpg',
+                  'caption': 'Un restaurant français typique'
+                },
+                {
+                  'type': 'video',
+                  'url': 'assets/videos/french/ordering.mp4',
+                  'caption': 'Comment commander dans un restaurant français'
+                }
+              ],
+              'vocabulary': {
+                'title': 'Au restaurant',
+                'words': [
+                  {
+                    'word': 'Le menu',
+                    'translation': 'The menu',
+                    'example': 'Puis-je voir le menu, s\'il vous plaît ?',
+                    'image': 'assets/images/french/vocabulary/menu.jpg',
+                    'audio': 'assets/audio/french/vocabulary/menu.mp3'
+                  },
+                  {
+                    'word': 'L\'addition',
+                    'translation': 'The bill',
+                    'example': 'L\'addition, s\'il vous plaît.',
+                    'image': 'assets/images/french/vocabulary/addition.jpg',
+                    'audio': 'assets/audio/french/vocabulary/addition.mp3'
+                  }
+                ]
+              },
+              'questions': [
+                {
+                  'type': 'role_play',
+                  'scenario': 'Commander un repas',
+                  'roles': ['Client', 'Serveur'],
+                  'dialogue': [
+                    {'role': 'Serveur', 'text': 'Bonjour, vous avez choisi ?'},
+                    {'role': 'Client', 'text': 'Je voudrais...'}
+                  ],
+                  'image': 'assets/images/french/questions/restaurant_scene.jpg'
+                },
+                {
+                  'type': 'menu_ordering',
+                  'question': 'Composez un repas français typique',
+                  'options': {
+                    'entrées': ['Soupe à l\'oignon', 'Salade niçoise'],
+                    'plats': ['Coq au vin', 'Boeuf bourguignon'],
+                    'desserts': ['Crème brûlée', 'Tarte Tatin']
+                  },
+                  'images': {
+                    'Soupe à l\'oignon':
+                        'assets/images/french/dishes/onion_soup.jpg',
+                    'Salade niçoise':
+                        'assets/images/french/dishes/nicoise_salad.jpg',
+                    'Coq au vin': 'assets/images/french/dishes/coq_au_vin.jpg',
+                    'Boeuf bourguignon':
+                        'assets/images/french/dishes/beef_bourguignon.jpg',
+                    'Crème brûlée':
+                        'assets/images/french/dishes/creme_brulee.jpg',
+                    'Tarte Tatin': 'assets/images/french/dishes/tarte_tatin.jpg'
+                  }
+                }
+              ]
             }
           ]
         },
@@ -83,31 +334,166 @@ class LanguageService {
           'order': 2,
           'lessons': [
             {
-              'title': 'Les salutations',
-              'description': 'Apprenez à saluer en français',
-              'duration': '15 min',
-              'xp': 50,
-              'level': 'A1',
-              'content': 'Bonjour, Au revoir...',
-              'completed': false,
-              'progress': 0.0
+              'title': 'À l\'hôtel',
+              'description':
+                  'Vocabulaire et expressions pour séjourner à l\'hôtel',
+              'duration': '30 min',
+              'xp': 80,
+              'level': 'A2',
+              'vocabulary_theme': {
+                'title': 'Vocabulaire hôtelier',
+                'words': [
+                  {
+                    'word': 'Réservation',
+                    'translation': 'Booking',
+                    'example': 'Je voudrais faire une réservation',
+                    'audio': 'assets/audio/french/reservation.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Chambre simple',
+                    'translation': 'Single room',
+                    'example': 'Je voudrais une chambre simple',
+                    'audio': 'assets/audio/french/chambre_simple.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Chambre double',
+                    'translation': 'Double room',
+                    'example': 'Avez-vous une chambre double ?',
+                    'audio': 'assets/audio/french/chambre_double.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Service de chambre',
+                    'translation': 'Room service',
+                    'example': 'J\'aimerais commander le service de chambre',
+                    'audio': 'assets/audio/french/service_chambre.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Petit-déjeuner',
+                    'translation': 'Breakfast',
+                    'example': 'Le petit-déjeuner est inclus ?',
+                    'audio': 'assets/audio/french/petit_dejeuner.mp3',
+                    'icon': Icons.volume_up
+                  }
+                ]
+              },
+              'dialogues': [
+                {
+                  'title': 'À la réception',
+                  'conversation': [
+                    {
+                      'speaker': 'Client',
+                      'text': 'Bonjour, j\'ai une réservation au nom de Martin',
+                      'audio': 'assets/audio/french/hotel_dialogue1.mp3',
+                      'icon': Icons.volume_up
+                    },
+                    {
+                      'speaker': 'Réceptionniste',
+                      'text':
+                          'Bienvenue ! Oui, une chambre double pour 3 nuits ?',
+                      'audio': 'assets/audio/french/hotel_dialogue2.mp3',
+                      'icon': Icons.volume_up
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'title': 'Au restaurant',
+              'description': 'Commander et dîner au restaurant',
+              'duration': '35 min',
+              'xp': 90,
+              'level': 'A2',
+              'vocabulary_theme': {
+                'title': 'Vocabulaire de restaurant',
+                'words': [
+                  {
+                    'word': 'Menu',
+                    'translation': 'Menu',
+                    'example': 'Puis-je voir le menu ?',
+                    'audio': 'assets/audio/french/menu.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Entrée',
+                    'translation': 'Starter',
+                    'example': 'Comme entrée, je prendrai la soupe',
+                    'audio': 'assets/audio/french/entree.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Plat principal',
+                    'translation': 'Main course',
+                    'example': 'Quel est le plat du jour ?',
+                    'audio': 'assets/audio/french/plat_principal.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Dessert',
+                    'translation': 'Dessert',
+                    'example': 'Je voudrais le dessert du jour',
+                    'audio': 'assets/audio/french/dessert.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'L\'addition',
+                    'translation': 'The bill',
+                    'example': 'L\'addition, s\'il vous plaît',
+                    'audio': 'assets/audio/french/addition.mp3',
+                    'icon': Icons.volume_up
+                  }
+                ]
+              }
             }
           ]
         },
         {
-          'name': 'Grammaire',
-          'description': 'Les bases de la grammaire française',
+          'name': 'Transport',
+          'description': 'Se déplacer en ville et en voyage',
           'order': 3,
           'lessons': [
             {
-              'title': 'Les articles',
-              'description': 'Les articles définis et indéfinis',
+              'title': 'Les transports en commun',
+              'description': 'Vocabulaire pour utiliser les transports publics',
               'duration': '25 min',
-              'xp': 100,
-              'level': 'A1',
-              'content': 'Le, La, Les...',
-              'completed': false,
-              'progress': 0.0
+              'xp': 70,
+              'level': 'A2',
+              'vocabulary_theme': {
+                'title': 'Vocabulaire des transports',
+                'words': [
+                  {
+                    'word': 'Métro',
+                    'translation': 'Subway',
+                    'example': 'Quelle ligne de métro pour la Tour Eiffel ?',
+                    'audio': 'assets/audio/french/metro.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Bus',
+                    'translation': 'Bus',
+                    'example': 'À quelle heure passe le prochain bus ?',
+                    'audio': 'assets/audio/french/bus.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Train',
+                    'translation': 'Train',
+                    'example': 'Le train est à l\'heure ?',
+                    'audio': 'assets/audio/french/train.mp3',
+                    'icon': Icons.volume_up
+                  },
+                  {
+                    'word': 'Billet',
+                    'translation': 'Ticket',
+                    'example': 'Où puis-je acheter un billet ?',
+                    'audio': 'assets/audio/french/billet.mp3',
+                    'icon': Icons.volume_up
+                  }
+                ]
+              }
             }
           ]
         }
