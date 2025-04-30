@@ -199,15 +199,71 @@ class _StudiesScreenState extends State<StudiesScreen>
                 .orderBy('order')
                 .snapshots(),
             builder: (context, snapshot) {
+              // Ajout de débogage
+              print('Language ID: ${widget.languageId}');
+              print('Snapshot has error: ${snapshot.hasError}');
+              print('Snapshot has data: ${snapshot.hasData}');
+              if (snapshot.hasData) {
+                print('Number of categories: ${snapshot.data!.docs.length}');
+              }
               if (snapshot.hasError) {
-                return Center(child: Text('Erreur: ${snapshot.error}'));
+                print('Error details: ${snapshot.error}');
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          size: 64, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text('Erreur: ${snapshot.error}'),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          try {
+                            await _languageService.initializeLanguages();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Données réinitialisées'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print('Erreur lors de la réinitialisation: $e');
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Erreur: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Réessayer'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFBE9E7E),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               }
 
               if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFFBE9E7E)),
+                  ),
+                );
               }
 
               final categories = snapshot.data!.docs;
+              print(
+                  'Categories data: ${categories.map((doc) => doc.data()).toList()}');
 
               if (categories.isEmpty) {
                 return Center(
@@ -231,7 +287,9 @@ class _StudiesScreenState extends State<StudiesScreen>
                       ElevatedButton.icon(
                         onPressed: () async {
                           try {
+                            print('Début de l\'initialisation des langues');
                             await _languageService.initializeLanguages();
+                            print('Langues initialisées avec succès');
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -242,6 +300,7 @@ class _StudiesScreenState extends State<StudiesScreen>
                               );
                             }
                           } catch (e) {
+                            print('Erreur lors de l\'initialisation: $e');
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
