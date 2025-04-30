@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/course_model.dart';
-import '../services/audio_service.dart';
 
 class LessonScreen extends StatefulWidget {
+  final Map<String, dynamic> lesson;
   final String languageId;
-  final String courseId;
-  final Lesson lesson;
 
   const LessonScreen({
     Key? key,
-    required this.languageId,
-    required this.courseId,
     required this.lesson,
+    required this.languageId,
   }) : super(key: key);
 
   @override
@@ -20,37 +16,183 @@ class LessonScreen extends StatefulWidget {
 }
 
 class _LessonScreenState extends State<LessonScreen> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AudioService _audioService = AudioService();
-  bool _showTranslations = false;
+  bool _isLoading = false;
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  final List<String> _sections = ['Théorie', 'Pratique', 'Quiz'];
 
   @override
-  void initState() {
-    super.initState();
-    _audioService.initialize();
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
-  Future<void> _markLessonAsCompleted() async {
+  Future<void> _markAsCompleted() async {
+    setState(() => _isLoading = true);
     try {
-      await _firestore
+      // Mettre à jour le statut de la leçon dans Firestore
+      await FirebaseFirestore.instance
           .collection('languages')
           .doc(widget.languageId)
-          .collection('courses')
-          .doc(widget.courseId)
-          .collection('lessons')
-          .doc(widget.lesson.id)
-          .update({'isCompleted': true});
+          .update({
+        'lessons.${widget.lesson['id']}.completed': true,
+        'lessons.${widget.lesson['id']}.completedAt':
+            FieldValue.serverTimestamp(),
+      });
 
-      if (!mounted) return;
-      Navigator.pop(context, true);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Leçon terminée !'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur lors de la mise à jour de la leçon: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
     }
+  }
+
+  Widget _buildTheorySection() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.lesson['title'] ?? '',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A4A4A),
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (widget.lesson['description'] != null)
+            Text(
+              widget.lesson['description'],
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          const SizedBox(height: 24),
+          // Contenu de la leçon
+          if (widget.lesson['content'] != null) ...[
+            if (widget.lesson['content'] is List) ...[
+              ...(widget.lesson['content'] as List).map<Widget>((content) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    content.toString(),
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                );
+              }).toList(),
+            ] else if (widget.lesson['content'] is String) ...[
+              Text(
+                widget.lesson['content'].toString(),
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ],
+          // Exemples
+          if (widget.lesson['examples'] != null) ...[
+            const SizedBox(height: 24),
+            const Text(
+              'Exemples',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4A4A4A),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (widget.lesson['examples'] is List) ...[
+              ...(widget.lesson['examples'] as List).map<Widget>((example) {
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      example.toString(),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ] else if (widget.lesson['examples'] is String) ...[
+              Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    widget.lesson['examples'].toString(),
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPracticeSection() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.construction,
+            size: 64,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Exercices à venir',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuizSection() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.quiz,
+            size: 64,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Quiz à venir',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -58,149 +200,87 @@ class _LessonScreenState extends State<LessonScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.lesson.title,
+          widget.lesson['title'],
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: const Color(0xFFBE9E7E),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(_showTranslations ? Icons.g_translate : Icons.translate,
-                color: Colors.white),
-            onPressed: () {
-              setState(() {
-                _showTranslations = !_showTranslations;
-              });
-            },
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: List.generate(_sections.length, (index) {
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: _currentPage == index
+                                ? Colors.white
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _sections[index],
+                          style: TextStyle(
+                            color: _currentPage == index
+                                ? Colors.white
+                                : Colors.white70,
+                            fontWeight: _currentPage == index
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
           ),
+        ),
+      ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() => _currentPage = index);
+        },
+        children: [
+          _buildTheorySection(),
+          _buildPracticeSection(),
+          _buildQuizSection(),
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFF5F5F5),
-              Color(0xFFE8E1D9),
-            ],
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _isLoading ? null : _markAsCompleted,
+        backgroundColor: const Color(0xFFBE9E7E),
+        icon: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 2,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.lesson.content,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Color(0xFF4A4A4A),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.volume_up,
-                              color: Color(0xFFBE9E7E),
-                            ),
-                            onPressed: () =>
-                                _audioService.playAudio(widget.lesson.audioUrl),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_showTranslations &&
-                  widget.lesson.translations.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                const Text(
-                  'Traductions',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4A4A4A),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ...widget.lesson.translations.map(
-                  (translation) => Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            translation.originalText,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF4A4A4A),
-                            ),
-                          ),
-                          const Divider(height: 24),
-                          Text(
-                            translation.translatedText,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFFBE9E7E),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: _markLessonAsCompleted,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFBE9E7E),
-              minimumSize: const Size(double.infinity, 48),
-            ),
-            child: const Text(
-              'Terminer la leçon',
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-        ),
+              )
+            : const Icon(Icons.check),
+        label: Text(_isLoading ? 'Enregistrement...' : 'Terminer la leçon'),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _audioService.dispose();
-    super.dispose();
   }
 }

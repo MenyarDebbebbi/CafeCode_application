@@ -4,7 +4,6 @@ import '../services/auth_service.dart';
 import 'pointage_screen.dart';
 import 'parametres_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'study_screen.dart';
 import 'camera_translation_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,6 +27,19 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
 
+  // Données simulées pour le développement
+  final Map<String, dynamic> _dailyProgress = {
+    'wordsLearned': 25,
+    'lessonsCompleted': 3,
+    'streakDays': 7,
+    'dailyGoalProgress': 0.75,
+  };
+
+  final String _phraseOfTheDay = "The early bird catches the worm";
+  final String _phraseMeaning =
+      "Celui qui se lève tôt accomplit plus de choses";
+  final String _phraseAudioUrl = "assets/audio/phrase_of_the_day.mp3";
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadUserData() async {
     setState(() => _isLoading = true);
     try {
-      // Charger les données utilisateur depuis Firestore
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('firstName', isEqualTo: widget.firstName)
@@ -63,18 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  void _navigateToPointage(String type) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PointageScreen(
-          firstName: widget.firstName,
-          lastName: widget.lastName,
-        ),
-      ),
-    );
   }
 
   Future<void> _signOut() async {
@@ -187,12 +186,167 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildProgressCard(
+      String title, String value, IconData icon, Color color) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhraseOfTheDay() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.lightbulb, color: Color(0xFFBE9E7E)),
+                SizedBox(width: 8),
+                Text(
+                  'Phrase du jour',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4A4A4A),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _phraseOfTheDay,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF4A4A4A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _phraseMeaning,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.volume_up),
+                  label: const Text('Écouter'),
+                  onPressed: () {
+                    // TODO: Implémenter la lecture audio
+                  },
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.mic),
+                  label: const Text('Pratiquer'),
+                  onPressed: () {
+                    // TODO: Implémenter la reconnaissance vocale
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSelectionCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: _showLanguageSelectionDialog,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.translate, color: Color(0xFFBE9E7E)),
+                  SizedBox(width: 8),
+                  Text(
+                    'Choisir une langue',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A4A4A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _buildLanguageChip('Français', 'FR'),
+                  _buildLanguageChip('English', 'EN'),
+                  _buildLanguageChip('Español', 'ES'),
+                  _buildLanguageChip('Deutsch', 'DE'),
+                  _buildLanguageChip('العربية', 'AR'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageChip(String language, String code) {
+    return Chip(
+      avatar: CircleAvatar(
+        backgroundColor: const Color(0xFFBE9E7E),
+        child: Text(
+          code,
+          style: const TextStyle(fontSize: 12, color: Colors.white),
+        ),
+      ),
+      label: Text(language),
+      backgroundColor: const Color(0xFFBE9E7E).withOpacity(0.1),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final safeArea = MediaQuery.of(context).padding;
-    final availableHeight = size.height - safeArea.top - safeArea.bottom;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -206,52 +360,23 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () {
-                  // TODO: Implémenter la logique des notifications
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Aucune nouvelle notification'),
-                      backgroundColor: Color(0xFFBE9E7E),
-                    ),
-                  );
-                },
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 14,
-                    minHeight: 14,
-                  ),
-                  child: const Text(
-                    '2',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 8,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ],
-          ),
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.notifications),
             onPressed: () {
-              // TODO: Implémenter la recherche
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Aucune nouvelle notification'),
+                  backgroundColor: Color(0xFFBE9E7E),
+                ),
+              );
             },
           ),
-          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.dark_mode),
+            onPressed: () {
+              // TODO: Implémenter le mode sombre
+            },
+          ),
         ],
       ),
       drawer: Drawer(
@@ -307,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            'Apprenant',
+                            'Niveau Intermédiaire',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white.withOpacity(0.9),
@@ -328,19 +453,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
-                leading: const Icon(Icons.school),
-                title: const Text('Études'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const StudyScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Traduction par Caméra'),
                 onTap: () {
@@ -349,11 +461,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.workspace_premium),
-                title: const Text('Certificats'),
+                leading: const Icon(Icons.chat),
+                title: const Text('ChatBot'),
                 onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/certificates');
+                  // TODO: Implémenter la navigation vers le ChatBot
                 },
               ),
               ListTile(
@@ -404,347 +515,160 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Bonjour, ${widget.firstName}',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A4A4A),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFFBE9E7E).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: const Text(
-                                  'Continuez votre apprentissage',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFFBE9E7E),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFBE9E7E).withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.emoji_events,
-                              color: Color(0xFFBE9E7E),
-                              size: 32,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Bonjour, ${widget.firstName}',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A4A4A),
+                        ),
                       ),
-                      const SizedBox(height: 32),
-                      // Cartes de statistiques avec animation d'ombre
+                      const SizedBox(height: 24),
+                      // Ajout du bouton d'accès aux études
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/languages');
+                        },
+                        icon: const Icon(Icons.school),
+                        label: const Text('Commencer à étudier'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFBE9E7E),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Cartes de progression
                       Row(
                         children: [
-                          _buildStatCard(
-                            'Langues',
-                            '5',
-                            Icons.language,
-                            const Color(0xFFBE9E7E),
+                          Expanded(
+                            child: _buildProgressCard(
+                              'Mots appris',
+                              _dailyProgress['wordsLearned'].toString(),
+                              Icons.book,
+                              const Color(0xFFBE9E7E),
+                            ),
                           ),
                           const SizedBox(width: 16),
-                          _buildStatCard(
-                            'Cours',
-                            '12',
-                            Icons.school,
-                            const Color(0xFF8B7355),
+                          Expanded(
+                            child: _buildProgressCard(
+                              'Leçons terminées',
+                              _dailyProgress['lessonsCompleted'].toString(),
+                              Icons.school,
+                              const Color(0xFF8B7355),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          _buildStatCard(
-                            'Quiz',
-                            '24',
-                            Icons.quiz,
-                            const Color(0xFFD4C4B7),
+                          Expanded(
+                            child: _buildProgressCard(
+                              'Jours de série',
+                              _dailyProgress['streakDays'].toString(),
+                              Icons.local_fire_department,
+                              const Color(0xFFD4C4B7),
+                            ),
                           ),
                           const SizedBox(width: 16),
-                          _buildStatCard(
-                            'Certificats',
-                            '3',
-                            Icons.workspace_premium,
-                            const Color(0xFFA89078),
+                          Expanded(
+                            child: _buildProgressCard(
+                              'Objectif quotidien',
+                              '${(_dailyProgress['dailyGoalProgress'] * 100).toInt()}%',
+                              Icons.stars,
+                              const Color(0xFFA89078),
+                            ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                // Section des langues en cours
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Continuer l\'apprentissage',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A4A4A),
+                      const SizedBox(height: 24),
+                      _buildPhraseOfTheDay(),
+                      const SizedBox(height: 24),
+                      _buildLanguageSelectionCard(),
+                      const SizedBox(height: 24),
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Implémenter la navigation vers tous les cours
-                        },
-                        child: const Text(
-                          'Voir tout',
-                          style: TextStyle(
-                            color: Color(0xFFBE9E7E),
-                            fontWeight: FontWeight.w600,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/studies');
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(Icons.school,
+                                        color: Color(0xFFBE9E7E)),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Mes Études',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF4A4A4A),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildStudyMetric('Cours en cours', '3'),
+                                    _buildStudyMetric('Exercices', '12'),
+                                    _buildStudyMetric('Niveau moyen', 'B1'),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 180,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      _buildLanguageCard(
-                        'Français',
-                        'Niveau Intermédiaire',
-                        '75%',
-                        'https://example.com/french-flag.png',
-                      ),
-                      _buildLanguageCard(
-                        'Anglais',
-                        'Niveau Débutant',
-                        '45%',
-                        'https://example.com/english-flag.png',
-                      ),
-                      _buildLanguageCard(
-                        'Espagnol',
-                        'Niveau Débutant',
-                        '30%',
-                        'https://example.com/spanish-flag.png',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Section des derniers certificats
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Derniers certificats',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A4A4A),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Implémenter la navigation vers tous les certificats
-                        },
-                        child: const Text(
-                          'Voir tout',
-                          style: TextStyle(
-                            color: Color(0xFFBE9E7E),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildCertificatesList(),
-                const SizedBox(height: 24),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatCard(
-      String title, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(height: 12),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Color(0xFF666666),
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Implémenter la navigation vers le ChatBot
+        },
+        backgroundColor: const Color(0xFFBE9E7E),
+        child: const Icon(Icons.chat, color: Colors.white),
       ),
     );
   }
 
-  Widget _buildLanguageCard(
-    String language,
-    String level,
-    String progress,
-    String flagUrl,
-  ) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Container(
-        width: 160,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFFBE9E7E).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.language,
-                color: Color(0xFFBE9E7E),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              language,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A4A4A),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              level,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF666666),
-              ),
-            ),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: double.parse(progress.replaceAll('%', '')) / 100,
-              backgroundColor: const Color(0xFFE8E1D9),
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(Color(0xFFBE9E7E)),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              progress,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFBE9E7E),
-              ),
-            ),
-          ],
+  Widget _buildStudyMetric(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFFBE9E7E),
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCertificatesList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: 3,
-      itemBuilder: (context, index) {
-        return Card(
-          elevation: 2,
-          margin: const EdgeInsets.only(bottom: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
           ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            leading: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFFBE9E7E).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Icon(
-                Icons.workspace_premium,
-                color: Color(0xFFBE9E7E),
-              ),
-            ),
-            title: const Text(
-              'Certificat de Français',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A4A4A),
-              ),
-            ),
-            subtitle: const Text(
-              'Niveau Intermédiaire • Obtenu le 15/03/2024',
-              style: TextStyle(color: Color(0xFF666666)),
-            ),
-            trailing: const Icon(
-              Icons.chevron_right,
-              color: Color(0xFFBE9E7E),
-            ),
-          ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

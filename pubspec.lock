@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.12.5"
+  cloudinary_public:
+    dependency: "direct main"
+    description:
+      name: cloudinary_public
+      sha256: "30c2aac5a31b468e5e955d2bbbac3eebcd1c66c9c7c2ffd75828606503bdda68"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.23.1"
   collection:
     dependency: transitive
     description:
@@ -201,6 +209,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: "253a18bbd4851fecba42f7343a1df3a9a4c1d31a2c1b37e221086b4fa8c8dbc9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.8.0+1"
+  dio_web_adapter:
+    dependency: transitive
+    description:
+      name: dio_web_adapter
+      sha256: "7586e476d70caecaf1686d21eee7247ea43ef5c345eab9e0cc3583ff13378d78"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   fake_async:
     dependency: transitive
     description:
@@ -305,6 +329,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.21.1"
+  firebase_storage:
+    dependency: "direct main"
+    description:
+      name: firebase_storage
+      sha256: b87029b506972987a827feaf296c21cd0fe1bb69c2595be1672253ba5205573e
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.6.5"
+  firebase_storage_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_storage_platform_interface
+      sha256: "4e18662e6a66e2e0e181c06f94707de06d5097d70cfe2b5141bf64660c5b5da9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.22"
+  firebase_storage_web:
+    dependency: transitive
+    description:
+      name: firebase_storage_web
+      sha256: "9523c455521b0497ee436be8614aab52f719309d16147a5b11091e44e4c5aa0a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.22"
   fixnum:
     dependency: transitive
     description:
@@ -465,13 +513,13 @@ packages:
     source: hosted
     version: "0.15.5"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: fe7ab022b76f3034adc518fb6ea04a82387620e19977665ea18d30a1cf43442f
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.3.0"
   http_parser:
     dependency: transitive
     description:
@@ -881,10 +929,10 @@ packages:
     dependency: "direct main"
     description:
       name: translator
-      sha256: "225ee22fc482736c593be5c232c0c5884b16d7cc42945c51ac73d9a0441dddcc"
+      sha256: "8f5e56d0ffb8f493b23ad0e4f824c17e5f43d45997e33b7c7b689c7a33cf3b06"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.7"
+    version: "1.0.3+1"
   typed_data:
     dependency: transitive
     description:
