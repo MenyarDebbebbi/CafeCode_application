@@ -1,0 +1,75 @@
+{
+  "title": "Saluti in italiano",
+  "content": [
+    {
+      "type": "text",
+      "data": "Les salutations sont fondamentales pour commencer une conversation en italien. Découvrons les expressions les plus courantes."
+    },
+    {
+      "type": "list",
+      "data": [
+        "Ciao - Salut (informel)",
+        "Buongiorno - Bonjour",
+        "Buon pomeriggio - Bon après-midi",
+        "Buonasera - Bonsoir",
+        "Buonanotte - Bonne nuit",
+        "Arrivederci - Au revoir (formel)",
+        "A presto - À bientôt",
+        "A dopo - À plus tard"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les salutations",
+        "audioUrl": "assets/audio/italian/greetings.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "In ufficio (Au bureau)",
+        "conversation": [
+          {
+            "speaker": "Laura",
+            "text": "Buongiorno, signor Rossi!"
+          },
+          {
+            "speaker": "Sig. Rossi",
+            "text": "Buongiorno, Laura! Come sta?"
+          },
+          {
+            "speaker": "Laura",
+            "text": "Bene, grazie. E Lei?"
+          },
+          {
+            "speaker": "Sig. Rossi",
+            "text": "Molto bene, grazie!"
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Quelle est la salutation informelle en italien ?",
+        "options": ["Buongiorno", "Arrivederci", "Ciao", "Buonasera"],
+        "correctAnswer": "Ciao",
+        "explanation": "Ciao est une salutation informelle qui peut être utilisée pour dire bonjour ou au revoir."
+      },
+      {
+        "question": "Comment dit-on 'Bonne nuit' en italien ?",
+        "options": ["Buongiorno", "Buonasera", "Buonanotte", "Arrivederci"],
+        "correctAnswer": "Buonanotte",
+        "explanation": "Buonanotte s'utilise pour souhaiter une bonne nuit avant d'aller dormir."
+      },
+      {
+        "question": "Quelle expression utilise-t-on pour dire 'Au revoir' formellement ?",
+        "options": ["Ciao", "A presto", "A dopo", "Arrivederci"],
+        "correctAnswer": "Arrivederci",
+        "explanation": "Arrivederci est la façon formelle de dire au revoir en italien."
+      }
+    ]
+  }
+}

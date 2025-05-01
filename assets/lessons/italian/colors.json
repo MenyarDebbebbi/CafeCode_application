@@ -1,0 +1,78 @@
+{
+  "title": "Colori in italiano",
+  "content": [
+    {
+      "type": "text",
+      "data": "Les couleurs sont partout autour de nous. Apprenons à les nommer en italien !"
+    },
+    {
+      "type": "list",
+      "data": [
+        "Rosso - Rouge",
+        "Blu - Bleu",
+        "Giallo - Jaune",
+        "Verde - Vert",
+        "Arancione - Orange",
+        "Viola - Violet",
+        "Rosa - Rose",
+        "Nero - Noir",
+        "Bianco - Blanc",
+        "Grigio - Gris",
+        "Marrone - Marron"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les couleurs",
+        "audioUrl": "assets/audio/italian/colors.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "Nel negozio di abbigliamento (Au magasin de vêtements)",
+        "conversation": [
+          {
+            "speaker": "Cliente",
+            "text": "Cerco una maglietta."
+          },
+          {
+            "speaker": "Venditore",
+            "text": "Che colore desidera?"
+          },
+          {
+            "speaker": "Cliente",
+            "text": "Vorrei una maglietta blu."
+          },
+          {
+            "speaker": "Venditore",
+            "text": "Qui abbiamo delle magliette blu."
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Comment dit-on 'rouge' en italien ?",
+        "options": ["Blu", "Rosso", "Verde", "Giallo"],
+        "correctAnswer": "Rosso",
+        "explanation": "Rosso est le mot italien pour 'rouge'."
+      },
+      {
+        "question": "Quelle est la couleur 'Nero' ?",
+        "options": ["Blanc", "Gris", "Marron", "Noir"],
+        "correctAnswer": "Noir",
+        "explanation": "Nero signifie 'noir' en italien."
+      },
+      {
+        "question": "Comment dit-on 'vert' en italien ?",
+        "options": ["Blu", "Giallo", "Verde", "Rosso"],
+        "correctAnswer": "Verde",
+        "explanation": "Verde est le mot italien pour 'vert'."
+      }
+    ]
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "title": "L'alfabeto italiano",
+  "content": [
+    {
+      "type": "text",
+      "data": "L'alfabeto italiano è composto da 21 lettere. Le lettere J, K, W, X e Y sono usate solo per le parole straniere. Ogni lettera ha una pronuncia specifica."
+    },
+    {
+      "type": "list",
+      "title": "Le lettere e la loro pronuncia",
+      "data": [
+        "A (ah) - come in 'amore'",
+        "B (bi) - come in 'bello'",
+        "C (ci) - come in 'casa'",
+        "D (di) - come in 'dolce'",
+        "E (eh) - come in 'estate'",
+        "F (effe) - come in 'festa'",
+        "G (gi) - come in 'gatto'",
+        "H (acca) - come in 'hotel'",
+        "I (i) - come in 'italiano'",
+        "L (elle) - come in 'luna'",
+        "M (emme) - come in 'mamma'",
+        "N (enne) - come in 'notte'",
+        "O (o) - come in 'oro'",
+        "P (pi) - come in 'pasta'",
+        "Q (cu) - come in 'questo'",
+        "R (erre) - come in 'rosa'",
+        "S (esse) - come in 'sole'",
+        "T (ti) - come in 'tavolo'",
+        "U (u) - come in 'uno'",
+        "V (vu) - come in 'vita'",
+        "Z (zeta) - come in 'zero'"
+      ]
+    },
+    {
+      "type": "list",
+      "title": "Lettere straniere",
+      "data": [
+        "J (i lunga) - come in 'jazz'",
+        "K (cappa) - come in 'kiwi'",
+        "W (doppia vu) - come in 'web'",
+        "X (ics) - come in 'xilofono'",
+        "Y (ipsilon) - come in 'yoga'"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Esercizio di pronuncia",
+      "data": "Ascolta e ripeti ogni lettera dell'alfabeto.",
+      "audioUrl": "assets/audio/italian/alphabet.mp3"
+    },
+    {
+      "type": "vocabulary",
+      "title": "Parole comuni",
+      "data": [
+        {
+          "word": "Amore",
+          "pronunciation": "a-mo-re",
+          "translation": "Love"
+        },
+        {
+          "word": "Bello",
+          "pronunciation": "bel-lo",
+          "translation": "Beautiful"
+        },
+        {
+          "word": "Casa",
+          "pronunciation": "ka-sa",
+          "translation": "House"
+        }
+      ]
+    },
+    {
+      "type": "dialogue",
+      "title": "Pratica di spelling",
+      "data": [
+        {
+          "speaker": "Insegnante",
+          "text": "Puoi fare lo spelling del tuo nome?"
+        },
+        {
+          "speaker": "Studente",
+          "text": "Sì, mi chiamo Marco. M-A-R-C-O"
+        },
+        {
+          "speaker": "Insegnante",
+          "text": "Molto bene! Ora fai lo spelling di 'casa'"
+        },
+        {
+          "speaker": "Studente",
+          "text": "C-A-S-A"
+        }
+      ]
+    }
+  ]
+}

@@ -13,6 +13,15 @@ import 'screens/lessons_screen.dart';
 import 'screens/lesson_screen.dart';
 import 'screens/data_initialization_screen.dart';
 import 'screens/camera_translation_screen.dart';
+import 'screens/podcast_screen.dart';
+import 'screens/games_screen.dart';
+import 'screens/games/quiz_game.dart';
+import 'screens/games/word_search_game.dart';
+import 'screens/games/fill_blanks_game.dart';
+import 'screens/games/word_race_game.dart';
+import 'screens/games/crosswords_game.dart';
+import 'screens/games/verb_battle_game.dart';
+import 'screens/games/image_word_game.dart';
 import 'services/theme_service.dart';
 
 void main() async {
@@ -81,6 +90,7 @@ class MyApp extends StatelessWidget {
         '/certificates': (context) => const CertificatesScreen(),
         '/languages': (context) => const LanguageSelectionScreen(),
         '/data-init': (context) => const DataInitializationScreen(),
+        '/podcast': (context) => const PodcastScreen(),
         '/camera-translation': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;
@@ -88,6 +98,14 @@ class MyApp extends StatelessWidget {
             targetLanguage: args['targetLanguage'] as String,
           );
         },
+        '/games': (context) => const GamesScreen(),
+        '/quiz_game': (context) => const QuizGameScreen(),
+        '/games/word-search': (context) => const WordSearchGame(),
+        '/games/fill-blanks': (context) => const FillBlanksGame(),
+        '/games/word-race': (context) => const WordRaceGame(),
+        '/games/crosswords': (context) => const CrosswordsGame(),
+        '/games/verb-battle': (context) => const VerbBattleGame(),
+        '/games/image-word': (context) => const ImageWordGame(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/studies') {

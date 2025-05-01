@@ -1,0 +1,78 @@
+{
+  "title": "Farben auf Deutsch",
+  "content": [
+    {
+      "type": "text",
+      "data": "Les couleurs sont partout autour de nous. Apprenons à les nommer en allemand !"
+    },
+    {
+      "type": "list",
+      "data": [
+        "Rot - Rouge",
+        "Blau - Bleu",
+        "Gelb - Jaune",
+        "Grün - Vert",
+        "Orange - Orange",
+        "Lila/Violett - Violet",
+        "Rosa - Rose",
+        "Schwarz - Noir",
+        "Weiß - Blanc",
+        "Grau - Gris",
+        "Braun - Marron"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les couleurs",
+        "audioUrl": "assets/audio/german/colors.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "Im Kleidungsgeschäft (Au magasin de vêtements)",
+        "conversation": [
+          {
+            "speaker": "Kunde",
+            "text": "Ich suche ein T-Shirt."
+          },
+          {
+            "speaker": "Verkäufer",
+            "text": "Welche Farbe möchten Sie?"
+          },
+          {
+            "speaker": "Kunde",
+            "text": "Ich hätte gerne ein blaues T-Shirt."
+          },
+          {
+            "speaker": "Verkäufer",
+            "text": "Hier haben wir blaue T-Shirts."
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Comment dit-on 'rouge' en allemand ?",
+        "options": ["Blau", "Rot", "Grün", "Gelb"],
+        "correctAnswer": "Rot",
+        "explanation": "Rot est le mot allemand pour 'rouge'."
+      },
+      {
+        "question": "Quelle est la couleur 'Schwarz' ?",
+        "options": ["Blanc", "Gris", "Marron", "Noir"],
+        "correctAnswer": "Noir",
+        "explanation": "Schwarz signifie 'noir' en allemand."
+      },
+      {
+        "question": "Comment dit-on 'vert' en allemand ?",
+        "options": ["Blau", "Gelb", "Grün", "Rot"],
+        "correctAnswer": "Grün",
+        "explanation": "Grün est le mot allemand pour 'vert'."
+      }
+    ]
+  }
+}

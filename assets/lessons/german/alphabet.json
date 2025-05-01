@@ -1,0 +1,100 @@
+{
+  "title": "Das deutsche Alphabet",
+  "content": [
+    {
+      "type": "text",
+      "data": "Das deutsche Alphabet besteht aus 26 Buchstaben und zusätzlichen Umlauten (ä, ö, ü) sowie dem scharfen S (ß). Jeder Buchstabe hat eine einzigartige Aussprache."
+    },
+    {
+      "type": "list",
+      "title": "Die Buchstaben und ihre Aussprache",
+      "data": [
+        "A (ah) - wie in 'Apfel'",
+        "B (beh) - wie in 'Buch'",
+        "C (tseh) - wie in 'Computer'",
+        "D (deh) - wie in 'Danke'",
+        "E (eh) - wie in 'Essen'",
+        "F (ef) - wie in 'Fisch'",
+        "G (geh) - wie in 'Garten'",
+        "H (hah) - wie in 'Haus'",
+        "I (ih) - wie in 'Insel'",
+        "J (yot) - wie in 'Jahr'",
+        "K (kah) - wie in 'Katze'",
+        "L (el) - wie in 'Lampe'",
+        "M (em) - wie in 'Mutter'",
+        "N (en) - wie in 'Nacht'",
+        "O (oh) - wie in 'Ofen'",
+        "P (peh) - wie in 'Post'",
+        "Q (kuh) - wie in 'Qualität'",
+        "R (er) - wie in 'Rad'",
+        "S (es) - wie in 'Sonne'",
+        "T (teh) - wie in 'Tag'",
+        "U (uh) - wie in 'Uhr'",
+        "V (fau) - wie in 'Vater'",
+        "W (veh) - wie in 'Wasser'",
+        "X (iks) - wie in 'Box'",
+        "Y (ypsilon) - wie in 'Yoga'",
+        "Z (tset) - wie in 'Zeit'"
+      ]
+    },
+    {
+      "type": "list",
+      "title": "Sonderzeichen",
+      "data": [
+        "Ä (eh-umlaut) - wie in 'Äpfel'",
+        "Ö (oh-umlaut) - wie in 'Öl'",
+        "Ü (uh-umlaut) - wie in 'über'",
+        "ß (eszett/scharfes S) - wie in 'Straße'"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Ausspracheübung",
+      "data": "Hören Sie sich jeden Buchstaben an und sprechen Sie nach.",
+      "audioUrl": "assets/audio/german/alphabet.mp3"
+    },
+    {
+      "type": "vocabulary",
+      "title": "Häufige Wörter",
+      "data": [
+        {
+          "word": "Apfel",
+          "pronunciation": "ap-fel",
+          "translation": "Apple"
+        },
+        {
+          "word": "Buch",
+          "pronunciation": "buːx",
+          "translation": "Book"
+        },
+        {
+          "word": "Computer",
+          "pronunciation": "kom-pju-ter",
+          "translation": "Computer"
+        }
+      ]
+    },
+    {
+      "type": "dialogue",
+      "title": "Buchstabierübung",
+      "data": [
+        {
+          "speaker": "Lehrer",
+          "text": "Können Sie Ihren Namen buchstabieren?"
+        },
+        {
+          "speaker": "Schüler",
+          "text": "Ja, ich heiße Hans. H-A-N-S"
+        },
+        {
+          "speaker": "Lehrer",
+          "text": "Sehr gut! Und jetzt buchstabieren Sie bitte 'Buch'"
+        },
+        {
+          "speaker": "Schüler",
+          "text": "B-U-C-H"
+        }
+      ]
+    }
+  ]
+}

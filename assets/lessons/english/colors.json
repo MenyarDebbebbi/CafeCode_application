@@ -1,0 +1,76 @@
+{
+  "title": "Colors in English",
+  "content": [
+    {
+      "type": "text",
+      "data": "Colors are all around us. Let's learn how to name them in English."
+    },
+    {
+      "type": "list",
+      "data": [
+        "Red - Rouge",
+        "Blue - Bleu",
+        "Yellow - Jaune",
+        "Green - Vert",
+        "Orange - Orange",
+        "Purple - Violet",
+        "Pink - Rose",
+        "Black - Noir",
+        "White - Blanc",
+        "Gray - Gris",
+        "Brown - Marron"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Listen and repeat the colors",
+        "audio": "assets/audio/english/colors.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "At the clothing store",
+        "conversation": [
+          { "speaker": "Customer", "text": "I'm looking for a blue shirt." },
+          {
+            "speaker": "Seller",
+            "text": "We have several models in blue. Do you prefer light blue or dark blue?"
+          },
+          { "speaker": "Customer", "text": "Light blue, please." },
+          {
+            "speaker": "Seller",
+            "text": "We also have this model in red and white."
+          },
+          {
+            "speaker": "Customer",
+            "text": "I'll take the blue one, thank you."
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "How do you say 'rouge' in English?",
+        "options": ["blue", "green", "red", "yellow"],
+        "correctAnswer": "red",
+        "explanation": "Red is the English word for 'rouge'."
+      },
+      {
+        "question": "What is the translation of 'blanc'?",
+        "options": ["black", "white", "gray", "brown"],
+        "correctAnswer": "white",
+        "explanation": "White is the English word for 'blanc'."
+      },
+      {
+        "question": "How do you say 'vert' in English?",
+        "options": ["green", "blue", "yellow", "purple"],
+        "correctAnswer": "green",
+        "explanation": "Green is the English word for 'vert'."
+      }
+    ]
+  }
+}

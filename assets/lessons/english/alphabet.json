@@ -1,0 +1,104 @@
+{
+  "title": "The English Alphabet",
+  "content": [
+    {
+      "type": "text",
+      "data": "The English alphabet consists of 26 letters. Here's how to pronounce them:"
+    },
+    {
+      "type": "list",
+      "data": [
+        "A (ay) - as in 'apple'",
+        "B (bee) - as in 'book'",
+        "C (see) - as in 'cat'",
+        "D (dee) - as in 'dog'",
+        "E (ee) - as in 'elephant'",
+        "F (ef) - as in 'fish'",
+        "G (jee) - as in 'girl'",
+        "H (aitch) - as in 'house'",
+        "I (eye) - as in 'ice'",
+        "J (jay) - as in 'jump'",
+        "K (kay) - as in 'king'",
+        "L (el) - as in 'lion'",
+        "M (em) - as in 'mouse'",
+        "N (en) - as in 'nest'",
+        "O (oh) - as in 'orange'",
+        "P (pee) - as in 'pen'",
+        "Q (cue) - as in 'queen'",
+        "R (ar) - as in 'red'",
+        "S (es) - as in 'sun'",
+        "T (tee) - as in 'table'",
+        "U (you) - as in 'umbrella'",
+        "V (vee) - as in 'violin'",
+        "W (double-you) - as in 'window'",
+        "X (ex) - as in 'box'",
+        "Y (why) - as in 'yellow'",
+        "Z (zee/zed) - as in 'zebra'"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Pronunciation Practice",
+      "instructions": "Listen and repeat each letter of the alphabet",
+      "audio": "assets/audio/english/alphabet.mp3"
+    },
+    {
+      "type": "vocabulary",
+      "title": "Common Words",
+      "data": [
+        {
+          "word": "Apple",
+          "translation": "Pomme"
+        },
+        {
+          "word": "Book",
+          "translation": "Livre"
+        },
+        {
+          "word": "Cat",
+          "translation": "Chat"
+        }
+      ]
+    },
+    {
+      "type": "dialogue",
+      "title": "Spelling Practice",
+      "data": [
+        {
+          "speaker": "Teacher",
+          "text": "Can you spell your name?"
+        },
+        {
+          "speaker": "John",
+          "text": "J-O-H-N"
+        },
+        {
+          "speaker": "Teacher",
+          "text": "Very good! Now, can you spell 'book'?"
+        },
+        {
+          "speaker": "John",
+          "text": "B-O-O-K"
+        }
+      ]
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "How many letters are in the English alphabet?",
+        "type": "multiple_choice",
+        "options": ["24", "25", "26", "27"],
+        "correctAnswer": 2,
+        "explanation": "The English alphabet has 26 letters, from A to Z."
+      },
+      {
+        "question": "What is the last letter of the English alphabet?",
+        "type": "multiple_choice",
+        "options": ["X", "Y", "Z", "W"],
+        "correctAnswer": 2,
+        "explanation": "Z is the last letter of the English alphabet."
+      }
+    ]
+  }
+}

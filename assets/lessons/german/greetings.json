@@ -1,0 +1,80 @@
+{
+  "title": "Deutsche Grüße",
+  "content": [
+    {
+      "type": "text",
+      "data": "Les salutations sont essentielles pour commencer une conversation en allemand. Apprenons les expressions les plus courantes."
+    },
+    {
+      "type": "list",
+      "data": [
+        "Hallo - Bonjour (informel)",
+        "Guten Morgen - Bonjour (le matin)",
+        "Guten Tag - Bonjour (formel)",
+        "Guten Abend - Bonsoir",
+        "Auf Wiedersehen - Au revoir (formel)",
+        "Tschüss - Au revoir (informel)",
+        "Bis später - À plus tard",
+        "Bis bald - À bientôt"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les salutations",
+        "audioUrl": "assets/audio/german/greetings.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "Im Büro (Au bureau)",
+        "conversation": [
+          {
+            "speaker": "Anna",
+            "text": "Guten Morgen, Herr Schmidt!"
+          },
+          {
+            "speaker": "Herr Schmidt",
+            "text": "Guten Morgen, Anna! Wie geht es Ihnen?"
+          },
+          {
+            "speaker": "Anna",
+            "text": "Danke, gut! Und Ihnen?"
+          },
+          {
+            "speaker": "Herr Schmidt",
+            "text": "Auch gut, danke!"
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Quelle est la salutation formelle en allemand ?",
+        "options": ["Hallo", "Guten Tag", "Tschüss", "Bis später"],
+        "correctAnswer": "Guten Tag",
+        "explanation": "Guten Tag est la salutation formelle utilisée pendant la journée."
+      },
+      {
+        "question": "Comment dit-on 'Au revoir' de manière informelle ?",
+        "options": ["Auf Wiedersehen", "Guten Abend", "Tschüss", "Guten Tag"],
+        "correctAnswer": "Tschüss",
+        "explanation": "Tschüss est l'équivalent informel de 'Au revoir'."
+      },
+      {
+        "question": "Quelle expression utilise-t-on le matin ?",
+        "options": [
+          "Guten Abend",
+          "Guten Tag",
+          "Guten Morgen",
+          "Auf Wiedersehen"
+        ],
+        "correctAnswer": "Guten Morgen",
+        "explanation": "Guten Morgen signifie 'Bonjour' et s'utilise le matin."
+      }
+    ]
+  }
+}

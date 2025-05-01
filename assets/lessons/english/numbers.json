@@ -1,0 +1,89 @@
+{
+  "title": "Numbers in English",
+  "content": [
+    {
+      "type": "text",
+      "data": "Learning to count in English is essential for daily life. Let's discover numbers from 0 to 20."
+    },
+    {
+      "type": "list",
+      "data": [
+        "0 - zero",
+        "1 - one",
+        "2 - two",
+        "3 - three",
+        "4 - four",
+        "5 - five",
+        "6 - six",
+        "7 - seven",
+        "8 - eight",
+        "9 - nine",
+        "10 - ten",
+        "11 - eleven",
+        "12 - twelve",
+        "13 - thirteen",
+        "14 - fourteen",
+        "15 - fifteen",
+        "16 - sixteen",
+        "17 - seventeen",
+        "18 - eighteen",
+        "19 - nineteen",
+        "20 - twenty"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Listen and repeat the numbers",
+        "audio": "assets/audio/english/numbers.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "At the store",
+        "conversation": [
+          {
+            "speaker": "Seller",
+            "text": "Hello! How many apples would you like?"
+          },
+          {
+            "speaker": "Customer",
+            "text": "I would like five apples, please."
+          },
+          {
+            "speaker": "Seller",
+            "text": "That will be three dollars and fifty cents."
+          },
+          { "speaker": "Customer", "text": "Here's four dollars." },
+          {
+            "speaker": "Seller",
+            "text": "Thank you, here's your change: fifty cents."
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "How do you write the number 15 in English?",
+        "options": ["fourteen", "sixteen", "fifteen", "thirteen"],
+        "correctAnswer": "fifteen",
+        "explanation": "Fifteen is the word for the number 15 in English."
+      },
+      {
+        "question": "What number comes after 'sixteen'?",
+        "options": ["seventeen", "eighteen", "fifteen", "fourteen"],
+        "correctAnswer": "seventeen",
+        "explanation": "Seventeen (17) comes after sixteen (16)."
+      },
+      {
+        "question": "How do you say 20 in English?",
+        "options": ["twelve", "twenty", "ten", "two"],
+        "correctAnswer": "twenty",
+        "explanation": "Twenty is the word for the number 20 in English."
+      }
+    ]
+  }
+}

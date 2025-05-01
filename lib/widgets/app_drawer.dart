@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class AppDrawer extends StatelessWidget {
   final String firstName;
@@ -9,68 +10,6 @@ class AppDrawer extends StatelessWidget {
     required this.firstName,
     required this.lastName,
   }) : super(key: key);
-
-  void _showLanguageSelectionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Choisir la langue cible'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Text('🇫🇷'),
-              title: const Text('Français'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(
-                  context,
-                  '/camera-translation',
-                  arguments: {'targetLanguage': 'fr'},
-                );
-              },
-            ),
-            ListTile(
-              leading: const Text('🇬🇧'),
-              title: const Text('Anglais'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(
-                  context,
-                  '/camera-translation',
-                  arguments: {'targetLanguage': 'en'},
-                );
-              },
-            ),
-            ListTile(
-              leading: const Text('🇪🇸'),
-              title: const Text('Espagnol'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(
-                  context,
-                  '/camera-translation',
-                  arguments: {'targetLanguage': 'es'},
-                );
-              },
-            ),
-            ListTile(
-              leading: const Text('🇮🇹'),
-              title: const Text('Italien'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(
-                  context,
-                  '/camera-translation',
-                  arguments: {'targetLanguage': 'it'},
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +24,10 @@ class AppDrawer extends StatelessWidget {
               backgroundColor: Colors.white,
               child: Text(
                 firstName.isNotEmpty ? firstName[0].toUpperCase() : '',
-                style: const TextStyle(fontSize: 32),
+                style: const TextStyle(
+                  fontSize: 32,
+                  color: Color(0xFFBE9E7E),
+                ),
               ),
             ),
             decoration: const BoxDecoration(color: Color(0xFFBE9E7E)),
@@ -95,24 +37,19 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Accueil'),
             onTap: () => Navigator.pushReplacementNamed(context, '/home'),
           ),
-          ExpansionTile(
+          ListTile(
             leading: const Icon(Icons.school),
             title: const Text('Commencer à étudier'),
-            children: [
-              ListTile(
-                leading: const Icon(Icons.language),
-                title: const Text('Choisir une langue'),
-                contentPadding: const EdgeInsets.only(left: 72.0, right: 16.0),
-                onTap: () =>
-                    Navigator.pushReplacementNamed(context, '/languages'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Traduction par caméra'),
-                contentPadding: const EdgeInsets.only(left: 72.0, right: 16.0),
-                onTap: () => _showLanguageSelectionDialog(context),
-              ),
-            ],
+            onTap: () => Navigator.pushReplacementNamed(context, '/languages'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('Traduction par caméra'),
+            onTap: () => Navigator.pushReplacementNamed(
+              context,
+              '/camera-translation',
+              arguments: {'targetLanguage': 'fr'},
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.dashboard),
@@ -120,15 +57,41 @@ class AppDrawer extends StatelessWidget {
             onTap: () => Navigator.pushReplacementNamed(context, '/dashboard'),
           ),
           ListTile(
-            leading: const Icon(Icons.timeline),
-            title: const Text('Parcours'),
-            onTap: () =>
-                Navigator.pushReplacementNamed(context, '/learning-path'),
+            leading: const Icon(Icons.mic),
+            title: const Text('Podcast'),
+            subtitle: const Text('Écoutez et apprenez'),
+            onTap: () => Navigator.pushReplacementNamed(context, '/podcast'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.games),
+            title: const Text('Jeux'),
+            subtitle: const Text('Apprenez en vous amusant'),
+            onTap: () => Navigator.pushReplacementNamed(context, '/games'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.chat),
+            title: const Text('ChatBot'),
+            onTap: () => Navigator.pushReplacementNamed(context, '/chatbot'),
           ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Paramètres'),
             onTap: () => Navigator.pushReplacementNamed(context, '/parametres'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text(
+              'Déconnexion',
+              style: TextStyle(color: Colors.red),
+            ),
+            onTap: () async {
+              final authService = AuthService();
+              await authService.signOut();
+              if (context.mounted) {
+                Navigator.pushReplacementNamed(context, '/auth');
+              }
+            },
           ),
         ],
       ),

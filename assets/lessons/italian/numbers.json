@@ -1,0 +1,84 @@
+{
+  "title": "Numeri in italiano",
+  "content": [
+    {
+      "type": "text",
+      "data": "Apprenons à compter en italien. Nous allons découvrir les nombres de 0 à 20."
+    },
+    {
+      "type": "list",
+      "data": [
+        "0 - zero",
+        "1 - uno",
+        "2 - due",
+        "3 - tre",
+        "4 - quattro",
+        "5 - cinque",
+        "6 - sei",
+        "7 - sette",
+        "8 - otto",
+        "9 - nove",
+        "10 - dieci",
+        "11 - undici",
+        "12 - dodici",
+        "13 - tredici",
+        "14 - quattordici",
+        "15 - quindici",
+        "16 - sedici",
+        "17 - diciassette",
+        "18 - diciotto",
+        "19 - diciannove",
+        "20 - venti"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les nombres",
+        "audioUrl": "assets/audio/italian/numbers.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "Al negozio (Au magasin)",
+        "conversation": [
+          {
+            "speaker": "Venditore",
+            "text": "Sono quindici euro."
+          },
+          {
+            "speaker": "Cliente",
+            "text": "Ecco venti euro."
+          },
+          {
+            "speaker": "Venditore",
+            "text": "Grazie. Ecco il suo resto: cinque euro."
+          }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Comment dit-on 15 en italien ?",
+        "options": ["dodici", "quattordici", "quindici", "sedici"],
+        "correctAnswer": "quindici",
+        "explanation": "quindici est le nombre 15 en italien."
+      },
+      {
+        "question": "Quel est le nombre 'otto' ?",
+        "options": ["6", "7", "8", "9"],
+        "correctAnswer": "8",
+        "explanation": "otto est le nombre 8 en italien."
+      },
+      {
+        "question": "Comment dit-on 20 en italien ?",
+        "options": ["dieci", "dodici", "venti", "tredici"],
+        "correctAnswer": "venti",
+        "explanation": "venti est le nombre 20 en italien."
+      }
+    ]
+  }
+}

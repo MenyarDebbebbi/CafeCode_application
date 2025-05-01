@@ -16,6 +16,10 @@ class LessonsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           theme,
           style: const TextStyle(
@@ -23,6 +27,13 @@ class LessonsScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () =>
+                Navigator.of(context).pushReplacementNamed('/home'),
+          ),
+        ],
         backgroundColor: const Color(0xFFBE9E7E),
       ),
       body: Container(
@@ -67,6 +78,7 @@ class LessonsScreen extends StatelessWidget {
                           arguments: {
                             'lesson': lesson,
                             'languageId': languageId,
+                            'categoryId': theme,
                           },
                         );
                       },
@@ -108,7 +120,7 @@ class LessonsScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Durée: ${lesson['duration'] ?? '15 min'}',
+                                        'Durée: ${lesson['duration'] ?? '15'} min',
                                         style: TextStyle(
                                           color: Colors.grey[600],
                                           fontSize: 14,
@@ -153,7 +165,7 @@ class LessonsScreen extends StatelessWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: LinearProgressIndicator(
-                                value: progress,
+                                value: isCompleted ? 1.0 : progress,
                                 backgroundColor: Colors.grey[200],
                                 valueColor: const AlwaysStoppedAnimation<Color>(
                                   Color(0xFFBE9E7E),
@@ -179,6 +191,23 @@ class LessonsScreen extends StatelessWidget {
                                         : FontWeight.normal,
                                   ),
                                 ),
+                                if (isCompleted) ...[
+                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.quiz,
+                                    color: Color(0xFFBE9E7E),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Text(
+                                    'Quiz disponible',
+                                    style: TextStyle(
+                                      color: Color(0xFFBE9E7E),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ],

@@ -52,10 +52,21 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text(
           'Choisir une langue',
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () =>
+                Navigator.of(context).pushReplacementNamed('/home'),
+          ),
+        ],
         backgroundColor: const Color(0xFFBE9E7E),
       ),
       body: StreamBuilder<QuerySnapshot>(
