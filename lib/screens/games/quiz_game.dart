@@ -1,0 +1,254 @@
+import 'package:flutter/material.dart';
+
+class QuizGameScreen extends StatefulWidget {
+  const QuizGameScreen({Key? key}) : super(key: key);
+
+  @override
+  State<QuizGameScreen> createState() => _QuizGameScreenState();
+}
+
+class _QuizGameScreenState extends State<QuizGameScreen> {
+  int currentQuestionIndex = 0;
+  int score = 0;
+  bool? selectedAnswer;
+  bool showResult = false;
+
+  final List<QuizQuestion> questions = [
+    QuizQuestion(
+      question: "Que signifie 'Hello' en français ?",
+      options: ["Bonjour", "Au revoir", "Merci", "S'il vous plaît"],
+      correctAnswerIndex: 0,
+    ),
+    QuizQuestion(
+      question: "Comment dit-on 'chat' en anglais ?",
+      options: ["Dog", "Cat", "Bird", "Fish"],
+      correctAnswerIndex: 1,
+    ),
+    QuizQuestion(
+      question: "Quelle est la traduction de 'Thank you' ?",
+      options: ["S'il vous plaît", "Au revoir", "Bonjour", "Merci"],
+      correctAnswerIndex: 3,
+    ),
+    QuizQuestion(
+      question: "Comment dit-on 'Good morning' en français ?",
+      options: ["Bonsoir", "Bonne nuit", "Bonjour", "Au revoir"],
+      correctAnswerIndex: 2,
+    ),
+    QuizQuestion(
+      question: "Que signifie 'Please' en français ?",
+      options: ["Merci", "S'il vous plaît", "De rien", "Au revoir"],
+      correctAnswerIndex: 1,
+    ),
+  ];
+
+  void checkAnswer(int selectedIndex) {
+    if (selectedAnswer != null) return;
+
+    setState(() {
+      selectedAnswer =
+          selectedIndex == questions[currentQuestionIndex].correctAnswerIndex;
+      showResult = true;
+      if (selectedAnswer!) {
+        score++;
+      }
+    });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            selectedAnswer = null;
+            showResult = false;
+          } else {
+            showFinalScore();
+          }
+        });
+      }
+    });
+  }
+
+  void showFinalScore() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(
+          score > (questions.length / 2) ? 'Félicitations !' : 'Fin du quiz',
+          style: TextStyle(
+            color:
+                score > (questions.length / 2) ? Colors.green : Colors.orange,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Votre score : $score/${questions.length}',
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              score > (questions.length / 2)
+                  ? 'Excellent travail !'
+                  : 'Continuez à pratiquer !',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              resetQuiz();
+            },
+            child: const Text('Rejouer'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+            child: const Text('Quitter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void resetQuiz() {
+    setState(() {
+      currentQuestionIndex = 0;
+      score = 0;
+      selectedAnswer = null;
+      showResult = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentQuestion = questions[currentQuestionIndex];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quiz Rapide'),
+        backgroundColor: const Color(0xFFBE9E7E),
+        actions: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Score: $score/${questions.length}',
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFF5F5F5), Color(0xFFE8E1D9)],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              LinearProgressIndicator(
+                value: (currentQuestionIndex + 1) / questions.length,
+                backgroundColor: Colors.grey[300],
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(Color(0xFFBE9E7E)),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Question ${currentQuestionIndex + 1}/${questions.length}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF666666),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    currentQuestion.question,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: currentQuestion.options.length,
+                  itemBuilder: (context, index) {
+                    bool isSelected = selectedAnswer != null &&
+                        index == currentQuestion.correctAnswerIndex;
+                    bool isWrong = showResult &&
+                        selectedAnswer == false &&
+                        index ==
+                            currentQuestion.options.indexOf(currentQuestion
+                                .options[currentQuestion.correctAnswerIndex]);
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ElevatedButton(
+                        onPressed: selectedAnswer != null
+                            ? null
+                            : () => checkAnswer(index),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: showResult
+                              ? (isSelected || isWrong)
+                                  ? (isSelected ? Colors.green : Colors.red)
+                                  : const Color(0xFFBE9E7E)
+                              : const Color(0xFFBE9E7E),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          currentQuestion.options[index],
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class QuizQuestion {
+  final String question;
+  final List<String> options;
+  final int correctAnswerIndex;
+
+  QuizQuestion({
+    required this.question,
+    required this.options,
+    required this.correctAnswerIndex,
+  });
+}

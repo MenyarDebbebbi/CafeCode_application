@@ -1,0 +1,66 @@
+{
+  "title": "English Greetings",
+  "content": [
+    {
+      "type": "text",
+      "data": "Greetings are essential to start a conversation in English. Let's learn the most common expressions."
+    },
+    {
+      "type": "list",
+      "data": [
+        "Hello - (formal)",
+        "Hi - (informal)",
+        "Good morning - (until noon)",
+        "Good afternoon - (noon to evening)",
+        "Good evening - (evening)",
+        "Goodbye - (formal)",
+        "Bye - (informal)",
+        "See you later - (informal)",
+        "See you soon - (informal)"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Listen and repeat the greetings",
+        "audio": "assets/audio/english/greetings.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "A Meeting",
+        "conversation": [
+          { "speaker": "John", "text": "Hello! How are you?" },
+          { "speaker": "Sarah", "text": "Hi! I'm fine, thank you. And you?" },
+          { "speaker": "John", "text": "I'm good too, thanks. See you later!" },
+          { "speaker": "Sarah", "text": "Goodbye!" }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "What is the formal greeting in English?",
+        "options": ["Hi", "Hello", "See you", "Hey"],
+        "correctAnswer": "Hello"
+      },
+      {
+        "question": "Which greeting is appropriate in the morning?",
+        "options": [
+          "Good evening",
+          "Good afternoon",
+          "Good morning",
+          "Good night"
+        ],
+        "correctAnswer": "Good morning"
+      },
+      {
+        "question": "What is an informal way to say goodbye?",
+        "options": ["Hello", "Goodbye", "Bye", "Good evening"],
+        "correctAnswer": "Bye"
+      }
+    ]
+  }
+}

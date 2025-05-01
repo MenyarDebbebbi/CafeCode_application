@@ -51,6 +51,7 @@ dependencies:
   cloudinary_public: ^0.23.1
   http: ^1.1.0
   provider: ^6.1.1
+  flutter_markdown: ^0.6.18
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,10 @@ flutter:
     - assets/languages/
     - assets/audio/
     - assets/sounds/
+    - assets/lessons/
+    - assets/lessons/french/
+    - assets/lessons/english/
+    - assets/lessons/german/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

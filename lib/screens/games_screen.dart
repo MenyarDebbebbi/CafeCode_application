@@ -8,69 +8,130 @@ class GamesScreen extends StatelessWidget {
     final List<GameCard> games = [
       GameCard(
         title: 'Memory',
-        description: 'Associez les mots à leurs traductions',
+        description: 'Associez les mots à leurs traductions et images',
         icon: Icons.grid_on,
         color: const Color(0xFF7E57C2),
         onTap: () {
-          // TODO: Implémenter le jeu Memory
-        },
-      ),
-      GameCard(
-        title: 'Mots Croisés',
-        description: 'Testez votre vocabulaire',
-        icon: Icons.apps,
-        color: const Color(0xFF26A69A),
-        onTap: () {
-          // TODO: Implémenter les mots croisés
+          Navigator.pushNamed(context, '/games/memory');
         },
       ),
       GameCard(
         title: 'Quiz Rapide',
-        description: 'Questions à choix multiples',
+        description: 'Testez vos connaissances avec des questions rapides',
         icon: Icons.quiz,
-        color: const Color(0xFFEF5350),
+        color: Colors.orange,
+        onTap: () => Navigator.pushNamed(context, '/quiz_game'),
+      ),
+      GameCard(
+        title: 'Mots Mêlés',
+        description: 'Trouvez les mots cachés par thème',
+        icon: Icons.search,
+        color: const Color(0xFF26A69A),
         onTap: () {
-          // TODO: Implémenter le quiz rapide
+          Navigator.pushNamed(context, '/games/word-search');
         },
       ),
       GameCard(
-        title: 'Phrases Mélangées',
-        description: 'Remettez les mots dans le bon ordre',
-        icon: Icons.shuffle,
+        title: 'Phrases à Trous',
+        description: 'Complétez les phrases avec le bon mot',
+        icon: Icons.edit,
         color: const Color(0xFF66BB6A),
         onTap: () {
-          // TODO: Implémenter le jeu de phrases mélangées
+          Navigator.pushNamed(context, '/games/fill-blanks');
         },
       ),
       GameCard(
         title: 'Images et Mots',
-        description: 'Associez les images aux mots',
+        description: 'Prenez des photos et apprenez le vocabulaire',
         icon: Icons.image,
         color: const Color(0xFFFFCA28),
         onTap: () {
-          // TODO: Implémenter le jeu d'association image-mot
+          Navigator.pushNamed(context, '/games/image-word');
         },
       ),
       GameCard(
-        title: 'Course Contre la Montre',
-        description: 'Traduisez le plus de mots possible',
+        title: 'Course aux Mots',
+        description: 'Tapez les mots le plus vite possible',
         icon: Icons.timer,
         color: const Color(0xFF42A5F5),
         onTap: () {
-          // TODO: Implémenter le jeu de rapidité
+          Navigator.pushNamed(context, '/games/word-race');
+        },
+      ),
+      GameCard(
+        title: 'Dialogue Virtuel',
+        description: 'Pratiquez des conversations avec un personnage virtuel',
+        icon: Icons.chat_bubble,
+        color: const Color(0xFF9C27B0),
+        onTap: () {
+          Navigator.pushNamed(context, '/games/virtual-dialogue');
+        },
+      ),
+      GameCard(
+        title: 'Mots Croisés',
+        description: 'Résolvez des mots croisés thématiques',
+        icon: Icons.apps,
+        color: const Color(0xFF795548),
+        onTap: () {
+          Navigator.pushNamed(context, '/games/crosswords');
+        },
+      ),
+      GameCard(
+        title: 'Histoire Interactive',
+        description: 'Créez votre histoire en choisissant les bonnes options',
+        icon: Icons.auto_stories,
+        color: const Color(0xFF3F51B5),
+        onTap: () {
+          Navigator.pushNamed(context, '/games/interactive-story');
+        },
+      ),
+      GameCard(
+        title: 'Karaoké Linguistique',
+        description: 'Chantez et apprenez avec des chansons populaires',
+        icon: Icons.music_note,
+        color: const Color(0xFFE91E63),
+        onTap: () {
+          Navigator.pushNamed(context, '/games/language-karaoke');
+        },
+      ),
+      GameCard(
+        title: 'Bataille de Verbes',
+        description: 'Testez vos connaissances en conjugaison',
+        icon: Icons.flash_on,
+        color: const Color(0xFFFF9800),
+        onTap: () {
+          Navigator.pushNamed(context, '/games/verb-battle');
+        },
+      ),
+      GameCard(
+        title: 'Chef Linguiste',
+        description:
+            'Apprenez le vocabulaire de la cuisine en préparant des recettes',
+        icon: Icons.restaurant,
+        color: const Color(0xFF4CAF50),
+        onTap: () {
+          Navigator.pushNamed(context, '/games/cooking-vocab');
         },
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text(
           'Mini-Jeux',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () =>
+                Navigator.of(context).pushReplacementNamed('/home'),
+          ),
+        ],
         backgroundColor: const Color(0xFFBE9E7E),
       ),
       body: Container(

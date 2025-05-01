@@ -1,0 +1,73 @@
+{
+  "title": "Les couleurs en français",
+  "content": [
+    {
+      "type": "text",
+      "data": "Les couleurs sont partout autour de nous. Apprenons à les nommer en français."
+    },
+    {
+      "type": "list",
+      "data": [
+        "Rouge - Red",
+        "Bleu - Blue",
+        "Jaune - Yellow",
+        "Vert - Green",
+        "Orange - Orange",
+        "Violet - Purple",
+        "Rose - Pink",
+        "Noir - Black",
+        "Blanc - White",
+        "Gris - Gray",
+        "Marron - Brown"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les couleurs",
+        "audio": "assets/audio/french/colors.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "Dans un magasin de vêtements",
+        "conversation": [
+          { "speaker": "Client", "text": "Je cherche une chemise bleue." },
+          {
+            "speaker": "Vendeur",
+            "text": "Nous avons plusieurs modèles en bleu. Préférez-vous bleu clair ou bleu foncé ?"
+          },
+          { "speaker": "Client", "text": "Bleu clair, s'il vous plaît." },
+          {
+            "speaker": "Vendeur",
+            "text": "Nous avons aussi ce modèle en rouge et en blanc."
+          },
+          { "speaker": "Client", "text": "Je vais prendre la bleue, merci." }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Comment dit-on 'red' en français ?",
+        "options": ["bleu", "vert", "rouge", "jaune"],
+        "correctAnswer": "rouge",
+        "explanation": "Rouge est le mot français pour la couleur rouge (red)."
+      },
+      {
+        "question": "Quelle est la traduction de 'white' ?",
+        "options": ["noir", "blanc", "gris", "marron"],
+        "correctAnswer": "blanc",
+        "explanation": "Blanc est le mot français pour la couleur blanche (white)."
+      },
+      {
+        "question": "Comment dit-on 'green' en français ?",
+        "options": ["vert", "bleu", "jaune", "violet"],
+        "correctAnswer": "vert",
+        "explanation": "Vert est le mot français pour la couleur verte (green)."
+      }
+    ]
+  }
+}

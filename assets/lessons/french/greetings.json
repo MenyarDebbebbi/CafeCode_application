@@ -1,0 +1,64 @@
+{
+  "title": "Les salutations en français",
+  "content": [
+    {
+      "type": "text",
+      "data": "Les salutations sont essentielles pour commencer une conversation en français. Apprenons les expressions les plus courantes."
+    },
+    {
+      "type": "list",
+      "data": [
+        "Bonjour - Hello (formal)",
+        "Salut - Hi (informal)",
+        "Bonsoir - Good evening",
+        "Au revoir - Goodbye",
+        "À bientôt - See you soon",
+        "À plus tard - See you later"
+      ]
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "instructions": "Écoutez et répétez les salutations",
+        "audio": "assets/audio/french/greetings.mp3"
+      }
+    },
+    {
+      "type": "dialogue",
+      "data": {
+        "title": "Une rencontre",
+        "conversation": [
+          { "speaker": "Marie", "text": "Bonjour ! Comment allez-vous ?" },
+          {
+            "speaker": "Pierre",
+            "text": "Bonjour ! Je vais très bien, merci. Et vous ?"
+          },
+          { "speaker": "Marie", "text": "Très bien, merci. À bientôt !" },
+          { "speaker": "Pierre", "text": "Au revoir !" }
+        ]
+      }
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Quelle est la salutation formelle en français ?",
+        "options": ["Salut", "Bonjour", "À plus", "Ciao"],
+        "correctAnswer": "Bonjour",
+        "explanation": "Bonjour est la salutation formelle standard en français."
+      },
+      {
+        "question": "Comment dit-on 'See you soon' en français ?",
+        "options": ["Au revoir", "À plus tard", "À bientôt", "Bonsoir"],
+        "correctAnswer": "À bientôt",
+        "explanation": "À bientôt signifie littéralement 'à bientôt' et est utilisé pour dire au revoir."
+      },
+      {
+        "question": "Quelle est la salutation appropriée le soir ?",
+        "options": ["Bonjour", "Bonsoir", "Salut", "À plus"],
+        "correctAnswer": "Bonsoir",
+        "explanation": "Bonsoir est utilisé comme salutation le soir."
+      }
+    ]
+  }
+}

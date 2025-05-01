@@ -1,0 +1,104 @@
+{
+  "title": "L'alphabet français",
+  "content": [
+    {
+      "type": "text",
+      "data": "L'alphabet français contient 26 lettres. Voici comment les prononcer :"
+    },
+    {
+      "type": "list",
+      "data": [
+        "A (ah) - comme dans 'avion'",
+        "B (beh) - comme dans 'bateau'",
+        "C (seh) - comme dans 'chat'",
+        "D (deh) - comme dans 'dent'",
+        "E (euh) - comme dans 'menu'",
+        "F (ef) - comme dans 'feu'",
+        "G (jeh) - comme dans 'gâteau'",
+        "H (ash) - comme dans 'hôtel'",
+        "I (ee) - comme dans 'île'",
+        "J (jee) - comme dans 'jardin'",
+        "K (kah) - comme dans 'kilo'",
+        "L (el) - comme dans 'livre'",
+        "M (em) - comme dans 'maison'",
+        "N (en) - comme dans 'nuit'",
+        "O (oh) - comme dans 'orange'",
+        "P (peh) - comme dans 'papa'",
+        "Q (kyu) - comme dans 'quatre'",
+        "R (er) - comme dans 'rouge'",
+        "S (es) - comme dans 'soleil'",
+        "T (teh) - comme dans 'table'",
+        "U (yu) - comme dans 'une'",
+        "V (veh) - comme dans 'vert'",
+        "W (doo-bluh-veh) - comme dans 'wagon'",
+        "X (eeks) - comme dans 'xylophone'",
+        "Y (ee-grek) - comme dans 'yoga'",
+        "Z (zed) - comme dans 'zoo'"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Exercice de prononciation",
+      "instructions": "Écoutez et répétez chaque lettre de l'alphabet",
+      "audio": "assets/audio/french/alphabet.mp3"
+    },
+    {
+      "type": "vocabulary",
+      "title": "Vocabulaire",
+      "data": [
+        {
+          "word": "Avion",
+          "translation": "Airplane"
+        },
+        {
+          "word": "Bateau",
+          "translation": "Boat"
+        },
+        {
+          "word": "Chat",
+          "translation": "Cat"
+        }
+      ]
+    },
+    {
+      "type": "dialogue",
+      "title": "Pratique d'épellation",
+      "data": [
+        {
+          "speaker": "Prof",
+          "text": "Comment épelez-vous votre nom ?"
+        },
+        {
+          "speaker": "Marie",
+          "text": "M-A-R-I-E"
+        },
+        {
+          "speaker": "Prof",
+          "text": "Très bien ! Et maintenant, pouvez-vous épeler le mot 'chat' ?"
+        },
+        {
+          "speaker": "Marie",
+          "text": "C-H-A-T"
+        }
+      ]
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "Comment prononce-t-on la lettre E en français ?",
+        "type": "multiple_choice",
+        "options": ["eh", "euh", "ih", "ay"],
+        "correctAnswer": 1,
+        "explanation": "La lettre E se prononce 'euh' en français."
+      },
+      {
+        "question": "Quelle est la dernière lettre de l'alphabet français ?",
+        "type": "multiple_choice",
+        "options": ["X", "Y", "Z", "W"],
+        "correctAnswer": 2,
+        "explanation": "Z (zed) est la dernière lettre de l'alphabet français."
+      }
+    ]
+  }
+}
