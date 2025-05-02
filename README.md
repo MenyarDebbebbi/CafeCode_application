@@ -1,149 +1,115 @@
-# 🌍 EchoLang - Application d'apprentissage des langues moderne et intelligente
+# EchoLang - Application d'Apprentissage des Langues
 
-## 📱 À propos d'EchoLang
+## 📱 Description
 
-EchoLang est une application d'apprentissage des langues nouvelle génération qui combine intelligence artificielle, gamification et méthodes pédagogiques éprouvées pour offrir une expérience d'apprentissage personnalisée et efficace.
+EchoLang est une application moderne d'apprentissage des langues qui combine l'intelligence artificielle, la gamification et des méthodes pédagogiques éprouvées pour offrir une expérience d'apprentissage personnalisée et efficace.
 
-## 🎯 Fonctionnalités principales
+## ✨ Fonctionnalités Principales
 
-### 1. Parcours Personnalisé Intelligent
+### 🎯 Apprentissage Personnalisé
 
-- Test de niveau adaptatif à l'inscription
-- Génération de parcours basée sur les objectifs (voyage, business, études)
-- Adaptation continue du contenu selon la progression
+- Parcours adaptatif basé sur votre niveau
+- Test de niveau initial
+- Suivi de progression détaillé
+- Objectifs quotidiens personnalisés
 
-### 2. Apprentissage Multimodal
+### 🎮 Mini-Jeux Éducatifs
 
-- Exercices interactifs combinant audio, texte et vidéo
-- Quiz dynamiques avec correction instantanée
-- Exercices d'écriture avec analyse IA
-- Reconnaissance vocale pour la pratique de la prononciation
+- **Quiz Rapide** : Testez vos connaissances
+- **Mots Mêlés** : Trouvez les mots cachés par thème
+- **Phrases à Trous** : Complétez les phrases
+- **Course aux Mots** : Améliorez votre vitesse de frappe
+- **Images et Mots** : Apprenez le vocabulaire avec des photos
+- **Mots Croisés** : Résolvez des grilles thématiques
+- **Bataille de Verbes** : Pratiquez la conjugaison
+- **Memory** : Associez les mots et leurs traductions
 
-### 3. EchoBot - Assistant IA
+### 🤖 Fonctionnalités Innovantes
 
-- Conversations libres dans la langue cible
-- Scénarios contextuels (restaurant, aéroport, entretien)
-- Correction en temps réel des erreurs
-- Adaptation au niveau de l'utilisateur
+- **ChatBot** : Assistant linguistique intelligent
+- **Traduction par Caméra** : Traduisez du texte en temps réel
+- **Reconnaissance Vocale** : Pratiquez votre prononciation
+- **Podcasts** : Écoutez et apprenez
 
-### 4. Système de Révision Intelligent (SRS)
+### 📚 Contenu Pédagogique
 
-- Algorithme de répétition espacée
-- Rappels personnalisés
-- Tracking de la progression par mot/phrase
+- Leçons structurées par niveau (A1 à C2)
+- Exercices de grammaire
+- Vocabulaire thématique
+- Dialogues interactifs
 
-### 5. Gamification Avancée
+## 🛠️ Installation
 
-- Mini-jeux éducatifs (memory, mots croisés, etc.)
-- Système de points XP et niveaux
-- Badges et récompenses
-- Défis quotidiens et hebdomadaires
+### Prérequis
 
-### 6. Contenu Culturel et Immersif
+- Flutter SDK (version ^3.6.1)
+- Dart SDK
+- Android Studio / Xcode
+- Git
 
-- Vidéos sous-titrées interactives
-- Contenu culturel authentique
-- Click-to-translate sur chaque mot
-- Expressions idiomatiques et usages locaux
+### Étapes d'Installation
 
-### 7. Fonctionnalités Sociales
+1. Clonez le repository :
 
-- Défis communautaires
-- Classements mondiaux
-- Partage de progression
-- Apprentissage collaboratif
-
-### 8. Analytics et Progression
-
-- Statistiques détaillées
-- Graphiques de progression
-- Analyse des points forts/faibles
-- Recommandations personnalisées
-
-### 9. Accessibilité
-
-- Mode hors-ligne complet
-- Support multi-langues
-- Gestion multi-profils
-- Interface adaptative
-
-## 🛠️ Technologies Utilisées
-
-- **Frontend**: Flutter
-- **Backend**: Firebase
-- **Base de données**: Cloud Firestore
-- **Authentication**: Firebase Auth
-- **Storage**: Firebase Storage
-- **IA/ML**: TensorFlow, ML Kit
-- **Analytics**: Firebase Analytics
-
-## 📦 Structure du Projet
-
-```
-lib/
-├── main.dart
-├── models/
-│   ├── course_model.dart
-│   └── language_course.dart
-├── screens/
-│   ├── auth_page.dart
-│   ├── dashboard_screen.dart
-│   ├── lessons_screen.dart
-│   ├── echobot_screen.dart
-│   └── ...
-├── services/
-│   ├── audio_service.dart
-│   └── srs_service.dart
-└── widgets/
-    └── app_drawer.dart
+```bash
+git clone [URL_DU_REPO]
+cd projectflutter
 ```
 
-## 🎨 Design et UI/UX
+2. Installez les dépendances :
 
-- Interface moderne et intuitive
-- Thème personnalisable
-- Animations fluides
-- Design adaptatif
-- Accessibilité optimisée
+```bash
+flutter pub get
+```
 
-## 🔄 Cycle d'Apprentissage
+3. Configurez Firebase :
 
-1. **Évaluation**: Test de niveau initial
-2. **Personnalisation**: Création du parcours
-3. **Apprentissage**: Leçons interactives
-4. **Pratique**: Exercices et mini-jeux
-5. **Révision**: Système SRS
-6. **Évaluation**: Tests de progression
-7. **Adaptation**: Ajustement du parcours
+- Créez un projet Firebase
+- Ajoutez votre fichier `google-services.json` dans `android/app/`
+- Ajoutez votre fichier `GoogleService-Info.plist` pour iOS
 
-## 🎓 Niveaux et Progression
+4. Lancez l'application :
 
-- **Débutant (A1)**: Bases et survie
-- **Élémentaire (A2)**: Communication simple
-- **Intermédiaire (B1)**: Autonomie
-- **Avancé (B2)**: Fluidité
-- **Expert (C1/C2)**: Maîtrise
+```bash
+flutter run
+```
 
-## 🔒 Sécurité et Confidentialité
+## 📦 Dépendances Principales
 
-- Authentification sécurisée
-- Données chiffrées
-- Conformité RGPD
-- Contrôle parental
-- Sauvegarde automatique
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  camera: ^0.10.5+9
+  image_picker: ^1.0.7
+  google_mlkit_text_recognition: ^0.11.0
+  translator: ^1.0.3+1
+```
 
-## 📱 Configuration Requise
+## 🎨 Architecture
 
-- **Android**: Version 6.0 ou supérieure
-- **iOS**: Version 12.0 ou supérieure
-- **Espace de stockage**: 100 MB minimum
-- **RAM**: 2 GB recommandé
-- **Internet**: Connexion requise (sauf mode hors-ligne)
+L'application suit une architecture propre avec :
 
-## 🔜 Roadmap
+- Services pour la logique métier
+- Widgets réutilisables
+- Gestion d'état avec Provider
+- Base de données Firebase
+- Stockage local avec SharedPreferences
 
-- [ ] Intégration de nouvelles langues
-- [ ] Mode professeur/élève
-- [ ] Exercices en réalité augmentée
-- [ ] Intégration de contenus externes
-- [ ] API publique
+## 📱 Captures d'écran
+
+[À ajouter : captures d'écran des principales fonctionnalités]
+
+## 🔒 Sécurité
+
+- Authentification sécurisée avec Firebase
+- Stockage sécurisé des données utilisateur
+- Protection des API keys
+- Validation des entrées utilisateur
+
+## 🙏 Remerciements
+
+Un grand merci à moi !

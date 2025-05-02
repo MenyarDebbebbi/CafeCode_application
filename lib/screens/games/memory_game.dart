@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class MemoryGameScreen extends StatefulWidget {
-  const MemoryGameScreen({Key? key}) : super(key: key);
+class MemoryGame extends StatefulWidget {
+  const MemoryGame({Key? key}) : super(key: key);
 
   @override
-  State<MemoryGameScreen> createState() => _MemoryGameScreenState();
+  State<MemoryGame> createState() => _MemoryGameState();
 }
 
-class _MemoryGameScreenState extends State<MemoryGameScreen> {
+class _MemoryGameState extends State<MemoryGame> {
   List<MemoryCard> cards = [];
   bool isProcessing = false;
   int score = 0;
@@ -26,6 +26,8 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
     {'fr': 'Non', 'en': 'No'},
     {'fr': 'Chat', 'en': 'Cat'},
     {'fr': 'Chien', 'en': 'Dog'},
+    {'fr': 'Maison', 'en': 'House'},
+    {'fr': 'Voiture', 'en': 'Car'},
   ];
 
   @override
@@ -49,7 +51,6 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
   }
 
   void initializeCards() {
-    // Créer deux cartes pour chaque paire de mots
     List<MemoryCard> tempCards = [];
     for (var pair in wordPairs) {
       tempCards.add(MemoryCard(
@@ -63,8 +64,6 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
         isEnglish: true,
       ));
     }
-
-    // Mélanger les cartes
     tempCards.shuffle();
     setState(() {
       cards = tempCards;
@@ -89,7 +88,6 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
       attempts++;
 
       if (selectedCard!.pairId == cards[index].pairId) {
-        // Match trouvé
         setState(() {
           selectedCard!.isMatched = true;
           cards[index].isMatched = true;
@@ -98,14 +96,12 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
         selectedCard = null;
         isProcessing = false;
 
-        // Vérifier si le jeu est terminé
         if (cards.every((card) => card.isMatched)) {
           timer?.cancel();
           showWinDialog();
         }
       } else {
-        // Pas de match
-        Future.delayed(const Duration(seconds: 1), () {
+        Future.delayed(const Duration(milliseconds: 800), () {
           setState(() {
             selectedCard!.isFlipped = false;
             cards[index].isFlipped = false;
@@ -123,7 +119,15 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: const Text('Temps écoulé !'),
-        content: Text('Score final: $score\nNombre d\'essais: $attempts'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Score final: $score'),
+            Text('Nombre d\'essais: $attempts'),
+            const SizedBox(height: 16),
+            const Text('Continuez à pratiquer pour vous améliorer !'),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -150,8 +154,16 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: const Text('Félicitations !'),
-        content: Text(
-            'Vous avez gagné !\nScore: $score\nTemps restant: $timeLeft secondes\nNombre d\'essais: $attempts'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.emoji_events, size: 50, color: Colors.amber),
+            const SizedBox(height: 16),
+            Text('Score: $score'),
+            Text('Temps restant: $timeLeft secondes'),
+            Text('Nombre d\'essais: $attempts'),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -195,70 +207,105 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Memory Game'),
+        title: const Text('Memory Game', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFFBE9E7E),
         actions: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Temps: $timeLeft s',
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            alignment: Alignment.center,
+            child: Text(
+              'Temps: $timeLeft s',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Score: $score',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Essais: $attempts',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFF5F5F5), Color(0xFFE8E1D9)],
           ),
-          Expanded(
-            child: GridView.builder(
+        ),
+        child: Column(
+          children: [
+            Container(
               padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                childAspectRatio: 0.7,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildScoreCard('Score', score.toString()),
+                  _buildScoreCard('Essais', attempts.toString()),
+                ],
               ),
-              itemCount: cards.length,
-              itemBuilder: (context, index) {
-                return _buildCard(index);
-              },
+            ),
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: cards.length,
+                itemBuilder: (context, index) => _buildCard(index),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton.icon(
+                onPressed: resetGame,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Recommencer'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFBE9E7E),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScoreCard(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: resetGame,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFBE9E7E),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              ),
-              child: const Text('Recommencer'),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFBE9E7E),
             ),
           ),
         ],
@@ -275,6 +322,9 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
         transform: Matrix4.rotationY(cards[index].isFlipped ? 3.14 : 0),
         child: Card(
           elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           color: cards[index].isMatched
               ? Colors.green[100]
               : cards[index].isFlipped
@@ -296,7 +346,11 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
                       textAlign: TextAlign.center,
                     ),
                   )
-                : const Icon(Icons.question_mark, color: Colors.white),
+                : const Icon(
+                    Icons.question_mark,
+                    color: Colors.white,
+                    size: 30,
+                  ),
           ),
         ),
       ),
