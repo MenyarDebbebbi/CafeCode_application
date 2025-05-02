@@ -77,10 +77,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/logo.png
-    - assets/flags/
-    - assets/languages/
     - assets/audio/
-    - assets/sounds/
     - assets/lessons/
     - assets/lessons/french/
     - assets/lessons/english/
