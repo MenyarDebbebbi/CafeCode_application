@@ -205,72 +205,86 @@ class _MemoryGameState extends State<MemoryGame> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Memory Game', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFFBE9E7E),
-        actions: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            alignment: Alignment.center,
-            child: Text(
-              'Temps: $timeLeft s',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title:
+              const Text('Memory Game', style: TextStyle(color: Colors.white)),
+          backgroundColor: const Color(0xFFBE9E7E),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () async {
+              if (await _onWillPop()) {
+                if (context.mounted) {
+                  Navigator.of(context).pushReplacementNamed('/games');
+                }
+              }
+            },
           ),
-        ],
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFF5F5F5), Color(0xFFE8E1D9)],
-          ),
-        ),
-        child: Column(
-          children: [
+          actions: [
             Container(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildScoreCard('Score', score.toString()),
-                  _buildScoreCard('Essais', attempts.toString()),
-                ],
-              ),
-            ),
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: cards.length,
-                itemBuilder: (context, index) => _buildCard(index),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton.icon(
-                onPressed: resetGame,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Recommencer'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFBE9E7E),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.center,
+              child: Text(
+                'Temps: $timeLeft s',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),
           ],
+        ),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFF5F5F5), Color(0xFFE8E1D9)],
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildScoreCard('Score', score.toString()),
+                    _buildScoreCard('Essais', attempts.toString()),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: cards.length,
+                  itemBuilder: (context, index) => _buildCard(index),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton.icon(
+                  onPressed: resetGame,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Recommencer'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFBE9E7E),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -355,6 +369,30 @@ class _MemoryGameState extends State<MemoryGame> {
         ),
       ),
     );
+  }
+
+  Future<bool> _onWillPop() async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Quitter le jeu ?'),
+            content: const Text(
+                'Voulez-vous vraiment quitter le jeu ? Votre progression sera perdue.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Non'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('Oui'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 }
 

@@ -24,6 +24,8 @@ import 'screens/games/verb_battle_game.dart';
 import 'screens/games/image_word_game.dart';
 import 'screens/games/memory_game.dart';
 import 'screens/games/cooking_vocab_game.dart';
+import 'screens/games/interactive_story_game.dart';
+import 'screens/games/virtual_dialogue_game.dart';
 import 'services/theme_service.dart';
 
 void main() async {
@@ -110,6 +112,8 @@ class MyApp extends StatelessWidget {
         '/games/image-word': (context) => const ImageWordGame(),
         '/games/memory': (context) => const MemoryGame(),
         '/games/cooking-vocab': (context) => const CookingVocabGame(),
+        '/games/interactive-story': (context) => const InteractiveStoryGame(),
+        '/games/virtual-dialogue': (context) => const VirtualDialogueGame(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/studies') {
