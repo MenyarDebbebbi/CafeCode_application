@@ -52,11 +52,6 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.dashboard),
-            title: const Text('Tableau de bord'),
-            onTap: () => Navigator.pushReplacementNamed(context, '/dashboard'),
-          ),
-          ListTile(
             leading: const Icon(Icons.mic),
             title: const Text('Podcast'),
             subtitle: const Text('Écoutez et apprenez'),
@@ -71,7 +66,11 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.chat),
             title: const Text('ChatBot'),
-            onTap: () => Navigator.pushReplacementNamed(context, '/chatbot'),
+            subtitle: const Text('Assistant linguistique'),
+            onTap: () {
+              Navigator.pop(context); // Ferme le drawer
+              Navigator.pushReplacementNamed(context, '/chatbot');
+            },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
