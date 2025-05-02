@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/theme_service.dart';
+import '../services/phrase_of_day_service.dart';
 import '../widgets/app_drawer.dart';
 import 'pointage_screen.dart';
 import 'parametres_screen.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime _currentTime = DateTime.now();
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
+  late Map<String, String> _phraseOfTheDay;
 
   // Données simulées pour le développement
   final Map<String, dynamic> _dailyProgress = {
@@ -39,16 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
     'dailyGoalProgress': 0.75,
   };
 
-  final String _phraseOfTheDay = "The early bird catches the worm";
-  final String _phraseMeaning =
-      "Celui qui se lève tôt accomplit plus de choses";
-  final String _phraseAudioUrl = "assets/audio/phrase_of_the_day.mp3";
-
   @override
   void initState() {
     super.initState();
     _updateTime();
     _loadUserData();
+    _updatePhraseOfTheDay();
   }
 
   void _updateTime() {
@@ -78,6 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _updatePhraseOfTheDay() {
+    setState(() {
+      _phraseOfTheDay = PhraseOfDayService.getRandomPhrase();
+    });
   }
 
   Future<void> _signOut() async {
@@ -249,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              _phraseOfTheDay,
+              _phraseOfTheDay['phrase']!,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -258,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              _phraseMeaning,
+              _phraseOfTheDay['meaning']!,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -266,24 +270,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton.icon(
-                  icon: const Icon(Icons.volume_up),
-                  label: const Text('Écouter'),
-                  onPressed: () {
-                    // TODO: Implémenter la lecture audio
-                  },
-                ),
-                TextButton.icon(
-                  icon: const Icon(Icons.mic),
-                  label: const Text('Pratiquer'),
-                  onPressed: () {
-                    // TODO: Implémenter la reconnaissance vocale
-                  },
-                ),
-              ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: const Icon(Icons.refresh, color: Color(0xFFBE9E7E)),
+                onPressed: _updatePhraseOfTheDay,
+                tooltip: 'Nouvelle phrase',
+              ),
             ),
           ],
         ),

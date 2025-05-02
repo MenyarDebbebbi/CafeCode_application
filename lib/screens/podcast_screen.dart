@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/services.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({Key? key}) : super(key: key);
@@ -14,43 +15,68 @@ class _PodcastScreenState extends State<PodcastScreen> {
   String? _currentlyPlayingTitle;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+  bool _isLoading = false;
 
   final List<Map<String, dynamic>> _podcasts = [
     {
-      'title': 'Les bases de la prononciation française',
-      'description': 'Apprenez les sons fondamentaux du français',
-      'duration': '10:30',
-      'language': 'Français',
+      'title': 'Les Habits Neufs de L\'Empereur',
+      'description': 'Un conte classique sur la vanité et la vérité',
+      'duration': '05:21',
+      'author': 'Parlez-Vous French',
       'audioUrl':
-          'assets/audio/french/Le-Secret-Souleymane-Mbodj-Parlez-Vous-French.com_.mp3',
+          'assets/audio/Les-Habits-Neufs-de-L-Empereur-Parlez-Vous-French.com_.mp3',
+      'category': 'Contes Classiques'
     },
     {
-      'title': 'English Conversation Practice',
-      'description': 'Common phrases for everyday situations',
-      'duration': '15:45',
-      'language': 'English',
-      'audioUrl': 'assets/audio/english/conversation_practice.mp3',
+      'title': 'L\'Âne Merveille',
+      'description': 'Une histoire magique pleine de surprises',
+      'duration': '06:22',
+      'author': 'Parlez-Vous French',
+      'audioUrl': 'assets/audio/Ane-Merveille-Parlez-Vous-French.com_.mp3',
+      'category': 'Contes Magiques'
     },
     {
-      'title': 'Deutsche Aussprache',
-      'description': 'Grundlegende deutsche Aussprache',
-      'duration': '12:20',
-      'language': 'Deutsch',
-      'audioUrl': 'assets/audio/german/pronunciation.mp3',
+      'title': 'La Conquête',
+      'description': 'Une histoire de Louis Hémon',
+      'duration': '10:03',
+      'author': 'Louis Hémon',
+      'audioUrl':
+          'assets/audio/La-Conquete-Louis-Hémon-Parlez-Vous-French.com_.mp3',
+      'category': 'Littérature'
     },
     {
-      'title': 'Vocabulario Español',
-      'description': 'Palabras y frases comunes',
-      'duration': '08:15',
-      'language': 'Español',
-      'audioUrl': 'assets/audio/spanish/vocabulary.mp3',
+      'title': 'L\'Amour D\'Une Mère',
+      'description': 'Une touchante histoire sur l\'amour maternel',
+      'duration': '04:37',
+      'author': 'Parlez-Vous French',
+      'audioUrl': 'assets/audio/LAmour-DUne-Mère-Parlez-Vous-French.com_.mp3',
+      'category': 'Histoires de Vie'
     },
     {
-      'title': 'Pronuncia Italiana',
-      'description': 'Imparare la pronuncia italiana',
-      'duration': '11:30',
-      'language': 'Italiano',
-      'audioUrl': 'assets/audio/italian/pronunciation.mp3',
+      'title': 'Le Vrai Héritier',
+      'description': 'Une histoire sur la justice et la vérité',
+      'duration': '03:48',
+      'author': 'Parlez-Vous French',
+      'audioUrl': 'assets/audio/Le-Vrai-Héritier-Parlez-vous-French.mp3',
+      'category': 'Contes Moraux'
+    },
+    {
+      'title': 'La Vérité et le Mensonge',
+      'description': 'Un conte africain de Souleymane Mbodj',
+      'duration': '01:43',
+      'author': 'Souleymane Mbodj',
+      'audioUrl':
+          'assets/audio/La-Vérité-et-le-Mensonge-Souleymane-Mbodj-Parlez-Vous-French.com_.mp3',
+      'category': 'Contes Africains'
+    },
+    {
+      'title': 'Le Secret',
+      'description': 'Une histoire mystérieuse de Souleymane Mbodj',
+      'duration': '05:34',
+      'author': 'Souleymane Mbodj',
+      'audioUrl':
+          'assets/audio/Le-Secret-Souleymane-Mbodj-Parlez-Vous-French.com_.mp3',
+      'category': 'Contes Africains'
     },
   ];
 
@@ -74,6 +100,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
       setState(() {
         _isPlaying = false;
         _position = Duration.zero;
+        _currentlyPlayingTitle = null;
       });
     });
   }
@@ -92,23 +119,47 @@ class _PodcastScreenState extends State<PodcastScreen> {
   }
 
   Future<void> _playPause(String audioUrl, String title) async {
-    if (_currentlyPlayingTitle == title && _isPlaying) {
-      await _audioPlayer.pause();
-      setState(() {
-        _isPlaying = false;
-      });
-    } else {
-      if (_currentlyPlayingTitle != title) {
-        await _audioPlayer.play(AssetSource(audioUrl));
+    try {
+      if (_currentlyPlayingTitle == title && _isPlaying) {
+        await _audioPlayer.pause();
         setState(() {
-          _currentlyPlayingTitle = title;
+          _isPlaying = false;
         });
       } else {
-        await _audioPlayer.resume();
+        if (_currentlyPlayingTitle != title) {
+          await _audioPlayer.stop();
+
+          print('Tentative de lecture du fichier: $audioUrl');
+
+          // Vérifier si le fichier existe
+          try {
+            await rootBundle.load(audioUrl);
+          } catch (e) {
+            throw Exception('Le fichier audio n\'existe pas dans les assets');
+          }
+
+          await _audioPlayer
+              .play(AssetSource(audioUrl.replaceAll('assets/', '')));
+          setState(() {
+            _currentlyPlayingTitle = title;
+            _position = Duration.zero;
+            _isPlaying = true;
+          });
+        } else {
+          await _audioPlayer.resume();
+          setState(() {
+            _isPlaying = true;
+          });
+        }
       }
-      setState(() {
-        _isPlaying = true;
-      });
+    } catch (e) {
+      print('Erreur de lecture: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur de lecture: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -116,33 +167,64 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
+        ),
         title: const Text(
-          'Podcasts',
+          'Histoires Audio',
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () =>
+                Navigator.of(context).pushReplacementNamed('/home'),
+          ),
+        ],
         backgroundColor: const Color(0xFFBE9E7E),
       ),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: const Color(0xFFBE9E7E).withOpacity(0.1),
-            child: const Row(
-              children: [
-                Icon(Icons.headphones, color: Color(0xFFBE9E7E)),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Écoutez nos podcasts pour améliorer votre prononciation et votre compréhension orale',
-                    style: TextStyle(
+          if (_currentlyPlayingTitle != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: const Color(0xFFBE9E7E).withOpacity(0.1),
+              child: Column(
+                children: [
+                  Text(
+                    _currentlyPlayingTitle!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color(0xFF4A4A4A),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(_formatDuration(_position)),
+                      Expanded(
+                        child: Slider(
+                          value: _position.inSeconds.toDouble(),
+                          min: 0,
+                          max: _duration.inSeconds.toDouble(),
+                          onChanged: (value) async {
+                            final position = Duration(seconds: value.toInt());
+                            await _audioPlayer.seek(position);
+                            setState(() {
+                              _position = position;
+                            });
+                          },
+                        ),
+                      ),
+                      Text(_formatDuration(_duration)),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
           Expanded(
             child: ListView.builder(
               itemCount: _podcasts.length,
@@ -167,7 +249,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Icon(
-                            Icons.mic,
+                            isPlaying ? Icons.pause : Icons.play_arrow,
                             color: const Color(0xFFBE9E7E),
                             size: 30,
                           ),
@@ -183,59 +265,43 @@ class _PodcastScreenState extends State<PodcastScreen> {
                           children: [
                             Text(podcast['description']),
                             const SizedBox(height: 4),
-                            Text(
-                              '${podcast['language']} • ${podcast['duration']}',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12,
-                              ),
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFBE9E7E)
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    podcast['category'],
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFFBE9E7E),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '${podcast['duration']} • ${podcast['author']}',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: const Color(0xFFBE9E7E),
-                          ),
-                          onPressed: () =>
-                              _playPause(podcast['audioUrl'], podcast['title']),
+                        onTap: () => _playPause(
+                          podcast['audioUrl'],
+                          podcast['title'],
                         ),
                       ),
-                      if (isPlaying)
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Slider(
-                                value: _position.inSeconds.toDouble(),
-                                min: 0,
-                                max: _duration.inSeconds.toDouble(),
-                                activeColor: const Color(0xFFBE9E7E),
-                                onChanged: (value) async {
-                                  final position =
-                                      Duration(seconds: value.toInt());
-                                  await _audioPlayer.seek(position);
-                                  setState(() {
-                                    _position = position;
-                                  });
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(_formatDuration(_position)),
-                                    Text(_formatDuration(_duration)),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
                   ),
                 );
