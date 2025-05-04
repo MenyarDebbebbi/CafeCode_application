@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../services/theme_service.dart';
 import '../services/phrase_of_day_service.dart';
 import '../widgets/app_drawer.dart';
+import '../styles/home_styles.dart';
 import 'pointage_screen.dart';
 import 'parametres_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,13 +26,16 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final AuthService _authService = AuthService();
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
   DateTime _currentTime = DateTime.now();
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
   late Map<String, String> _phraseOfTheDay;
+  late AnimationController _animationController;
+  late Animation<double> _fadeInAnimation;
 
   // Données simulées pour le développement
   final Map<String, dynamic> _dailyProgress = {
@@ -44,9 +48,26 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _animationController.forward();
     _updateTime();
     _loadUserData();
     _updatePhraseOfTheDay();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   void _updateTime() {
@@ -196,89 +217,171 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildProgressCard(
       String title, String value, IconData icon, Color color) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Card(
+        elevation: 4,
+        shadowColor: color.withOpacity(0.3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                color.withOpacity(0.1),
+                Colors.white,
+              ],
             ),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Icon(icon, color: color, size: 32),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildPhraseOfTheDay() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.lightbulb, color: Color(0xFFBE9E7E)),
-                SizedBox(width: 8),
-                Text(
-                  'Phrase du jour',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4A4A4A),
-                  ),
-                ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      child: Card(
+        elevation: 8,
+        shadowColor: const Color(0xFFBE9E7E).withOpacity(0.3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFFBE9E7E).withOpacity(0.1),
+                Colors.white,
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              _phraseOfTheDay['phrase']!,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF4A4A4A),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFBE9E7E).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: const Icon(
+                      Icons.lightbulb,
+                      color: Color(0xFFBE9E7E),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Phrase du jour',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A4A4A),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Color(0xFFBE9E7E),
+                    ),
+                    onPressed: _updatePhraseOfTheDay,
+                    tooltip: 'Nouvelle phrase',
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _phraseOfTheDay['meaning']!,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                fontStyle: FontStyle.italic,
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _phraseOfTheDay['phrase']!,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF4A4A4A),
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFBE9E7E).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _phraseOfTheDay['meaning']!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[700],
+                          fontStyle: FontStyle.italic,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: const Icon(Icons.refresh, color: Color(0xFFBE9E7E)),
-                onPressed: _updatePhraseOfTheDay,
-                tooltip: 'Nouvelle phrase',
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -346,32 +449,51 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'EchoLang',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        elevation: 0,
+        backgroundColor: HomeStyles.primaryColor,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
           ),
         ),
-        backgroundColor: const Color(0xFFBE9E7E),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Row(
+          children: [
+            Text(
+              'Echo',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              'Lang',
+              style: TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 24,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications_none),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Aucune nouvelle notification'),
-                  backgroundColor: Color(0xFFBE9E7E),
+                SnackBar(
+                  content: const Text('Aucune nouvelle notification'),
+                  backgroundColor: HomeStyles.primaryColor,
                 ),
               );
             },
           ),
           IconButton(
-            icon: Icon(context.watch<ThemeService>().isDarkMode
-                ? Icons.light_mode
-                : Icons.dark_mode),
+            icon: Icon(
+              context.watch<ThemeService>().isDarkMode
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
             onPressed: () {
               context.read<ThemeService>().toggleTheme();
             },
@@ -383,150 +505,170 @@ class _HomeScreenState extends State<HomeScreen> {
         lastName: widget.lastName,
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF5EBE0), Colors.white],
+            colors: [
+              HomeStyles.primaryColor.withOpacity(0.1),
+              Colors.white,
+            ],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Bonjour, ${widget.firstName}',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A4A4A),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    'Bonjour, ${widget.firstName} 👋',
+                    style: HomeStyles.titleStyle,
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 24),
+                    decoration: HomeStyles.mainButtonDecoration(),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.school,
+                          color: Colors.white,
+                          size: 32,
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Ajout du bouton d'accès aux études
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/languages');
-                        },
-                        icon: const Icon(Icons.school),
-                        label: const Text('Commencer à étudier'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFBE9E7E),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 24),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Commencer à étudier',
+                                style: HomeStyles.cardTitleStyle,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Continuez votre apprentissage',
+                                style: HomeStyles.cardSubtitleStyle,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Cartes de progression
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildProgressCard(
-                              'Mots appris',
-                              _dailyProgress['wordsLearned'].toString(),
-                              Icons.book,
-                              const Color(0xFFBE9E7E),
-                            ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildProgressCard(
-                              'Leçons terminées',
-                              _dailyProgress['lessonsCompleted'].toString(),
-                              Icons.school,
-                              const Color(0xFF8B7355),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildProgressCard(
-                              'Jours de série',
-                              _dailyProgress['streakDays'].toString(),
-                              Icons.local_fire_department,
-                              const Color(0xFFD4C4B7),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildProgressCard(
-                              'Objectif quotidien',
-                              '${(_dailyProgress['dailyGoalProgress'] * 100).toInt()}%',
-                              Icons.stars,
-                              const Color(0xFFA89078),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      _buildPhraseOfTheDay(),
-                      const SizedBox(height: 24),
-                      _buildLanguageSelectionCard(),
-                      const SizedBox(height: 24),
-                      Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/studies');
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/languages');
                           },
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.school,
-                                        color: Color(0xFFBE9E7E)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Mes Études',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF4A4A4A),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _buildStudyMetric('Cours en cours', '3'),
-                                    _buildStudyMetric('Exercices', '12'),
-                                    _buildStudyMetric('Niveau moyen', 'B1'),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Cartes de progression
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildProgressCard(
+                          'Mots appris',
+                          _dailyProgress['wordsLearned'].toString(),
+                          Icons.book,
+                          const Color(0xFFBE9E7E),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildProgressCard(
+                          'Leçons terminées',
+                          _dailyProgress['lessonsCompleted'].toString(),
+                          Icons.school,
+                          const Color(0xFF8B7355),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildProgressCard(
+                          'Jours de série',
+                          _dailyProgress['streakDays'].toString(),
+                          Icons.local_fire_department,
+                          const Color(0xFFD4C4B7),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildProgressCard(
+                          'Objectif quotidien',
+                          '${(_dailyProgress['dailyGoalProgress'] * 100).toInt()}%',
+                          Icons.stars,
+                          const Color(0xFFA89078),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildPhraseOfTheDay(),
+                  const SizedBox(height: 24),
+                  _buildLanguageSelectionCard(),
+                  const SizedBox(height: 24),
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/studies');
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(Icons.school, color: Color(0xFFBE9E7E)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Mes Études',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4A4A4A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildStudyMetric('Cours en cours', '3'),
+                                _buildStudyMetric('Exercices', '12'),
+                                _buildStudyMetric('Niveau moyen', 'B1'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
@@ -535,8 +677,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
-        backgroundColor: const Color(0xFFBE9E7E),
-        child: const Icon(Icons.chat, color: Colors.white),
+        backgroundColor: HomeStyles.primaryColor,
+        icon: const Icon(Icons.chat_bubble_outline, color: Colors.white),
+        label: const Text(
+          'Assistant',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
