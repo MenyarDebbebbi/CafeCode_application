@@ -108,6 +108,15 @@ class _CameraTranslationScreenState extends State<CameraTranslationScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () async {
+            await _controller?.dispose();
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
         title: const Text(
           'Traduction par Caméra',
           style: TextStyle(color: Colors.white),
@@ -117,6 +126,15 @@ class _CameraTranslationScreenState extends State<CameraTranslationScreen> {
           IconButton(
             icon: const Icon(Icons.image, color: Colors.white),
             onPressed: _pickImage,
+          ),
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () async {
+              await _controller?.dispose();
+              if (mounted) {
+                Navigator.of(context).pushReplacementNamed('/home');
+              }
+            },
           ),
         ],
       ),
