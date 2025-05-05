@@ -217,6 +217,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildProgressCard(
       String title, String value, IconData icon, Color color) {
+    final isDarkMode = context.watch<ThemeService>().isDarkMode;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Card(
@@ -225,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
+        color: isDarkMode ? const Color(0xFF2C2C2C) : Colors.white,
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -232,10 +234,15 @@ class _HomeScreenState extends State<HomeScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                color.withOpacity(0.1),
-                Colors.white,
-              ],
+              colors: isDarkMode
+                  ? [
+                      color.withOpacity(0.2),
+                      const Color(0xFF2C2C2C),
+                    ]
+                  : [
+                      color.withOpacity(0.1),
+                      Colors.white,
+                    ],
             ),
           ),
           child: Column(
@@ -244,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withOpacity(isDarkMode ? 0.2 : 0.1),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Icon(icon, color: color, size: 32),
@@ -255,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen>
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: color,
+                  color: isDarkMode ? Colors.white : color,
                 ),
               ),
               const SizedBox(height: 8),
@@ -263,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen>
                 title,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: isDarkMode ? Colors.white70 : Colors.grey[600],
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -276,6 +283,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildPhraseOfTheDay() {
+    final isDarkMode = context.watch<ThemeService>().isDarkMode;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
       child: Card(
@@ -284,6 +292,7 @@ class _HomeScreenState extends State<HomeScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
+        color: isDarkMode ? const Color(0xFF2C2C2C) : Colors.white,
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -291,10 +300,15 @@ class _HomeScreenState extends State<HomeScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFFBE9E7E).withOpacity(0.1),
-                Colors.white,
-              ],
+              colors: isDarkMode
+                  ? [
+                      const Color(0xFF3C3C3C),
+                      const Color(0xFF2C2C2C),
+                    ]
+                  : [
+                      const Color(0xFFBE9E7E).withOpacity(0.1),
+                      Colors.white,
+                    ],
             ),
           ),
           child: Column(
@@ -305,7 +319,8 @@ class _HomeScreenState extends State<HomeScreen>
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFBE9E7E).withOpacity(0.1),
+                      color: const Color(0xFFBE9E7E)
+                          .withOpacity(isDarkMode ? 0.2 : 0.1),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: const Icon(
@@ -315,12 +330,13 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
+                  Text(
                     'Phrase du jour',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A4A4A),
+                      color:
+                          isDarkMode ? Colors.white : const Color(0xFF4A4A4A),
                     ),
                   ),
                   const Spacer(),
@@ -506,14 +522,8 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              HomeStyles.primaryColor.withOpacity(0.1),
-              Colors.white,
-            ],
-          ),
+          gradient: HomeStyles.getBackgroundGradient(
+              context.watch<ThemeService>().isDarkMode),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -526,7 +536,14 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 20),
                   Text(
                     'Bonjour, ${widget.firstName} 👋',
-                    style: HomeStyles.titleStyle,
+                    style: HomeStyles.getTitleStyle(
+                        context.watch<ThemeService>().isDarkMode),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Prêt à continuer votre apprentissage ?',
+                    style: HomeStyles.getSubtitleStyle(
+                        context.watch<ThemeService>().isDarkMode),
                   ),
                   const SizedBox(height: 24),
                   Container(
@@ -548,12 +565,14 @@ class _HomeScreenState extends State<HomeScreen>
                             children: [
                               Text(
                                 'Commencer à étudier',
-                                style: HomeStyles.cardTitleStyle,
+                                style: HomeStyles.getCardTitleStyle(
+                                    context.watch<ThemeService>().isDarkMode),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'Continuez votre apprentissage',
-                                style: HomeStyles.cardSubtitleStyle,
+                                style: HomeStyles.getCardSubtitleStyle(
+                                    context.watch<ThemeService>().isDarkMode),
                               ),
                             ],
                           ),
@@ -673,7 +692,7 @@ class _HomeScreenState extends State<HomeScreen>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ChatBotScreen(),
+              builder: (context) => const ChatbotScreen(),
             ),
           );
         },

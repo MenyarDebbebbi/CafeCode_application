@@ -2,68 +2,90 @@ import 'package:flutter/material.dart';
 
 class HomeStyles {
   static const Color primaryColor = Color(0xFFBE9E7E);
-  static const Color secondaryColor = Color(0xFFA98B6F);
-  static const Color textColor = Color(0xFF4A4A4A);
+  static const Color secondaryColor = Color(0xFF8B7355);
 
-  static BoxDecoration cardDecoration(Color color) {
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(20),
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          color.withOpacity(0.05),
-          Colors.white,
-        ],
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: color.withOpacity(0.1),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
+  static TextStyle getTitleStyle(bool isDarkMode) {
+    return TextStyle(
+      fontSize: 28,
+      fontWeight: FontWeight.bold,
+      color: isDarkMode ? Colors.white : const Color(0xFF4A4A4A),
+      letterSpacing: 0.5,
+    );
+  }
+
+  static TextStyle getSubtitleStyle(bool isDarkMode) {
+    return TextStyle(
+      fontSize: 16,
+      color: isDarkMode ? Colors.white70 : Colors.grey[600],
+    );
+  }
+
+  static TextStyle getCardTitleStyle(bool isDarkMode) {
+    return TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: isDarkMode ? Colors.white : Colors.white,
+    );
+  }
+
+  static TextStyle getCardSubtitleStyle(bool isDarkMode) {
+    return TextStyle(
+      fontSize: 14,
+      color: isDarkMode ? Colors.white70 : Colors.white70,
     );
   }
 
   static BoxDecoration mainButtonDecoration() {
     return BoxDecoration(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         colors: [primaryColor, secondaryColor],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(15),
       boxShadow: [
         BoxShadow(
           color: primaryColor.withOpacity(0.3),
-          blurRadius: 10,
+          blurRadius: 8,
           offset: const Offset(0, 4),
         ),
       ],
     );
   }
 
-  static TextStyle titleStyle = const TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: textColor,
-  );
+  static BoxDecoration getCardDecoration(bool isDarkMode) {
+    return BoxDecoration(
+      color: isDarkMode ? const Color(0xFF2C2C2C) : Colors.white,
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: isDarkMode
+              ? Colors.black.withOpacity(0.3)
+              : Colors.grey.withOpacity(0.2),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    );
+  }
 
-  static TextStyle subtitleStyle = const TextStyle(
-    fontSize: 16,
-    color: Colors.grey,
-    fontWeight: FontWeight.w500,
-  );
+  static Color getBackgroundColor(bool isDarkMode) {
+    return isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+  }
 
-  static TextStyle cardTitleStyle = const TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-    color: Colors.white,
-  );
-
-  static TextStyle cardSubtitleStyle = TextStyle(
-    color: Colors.white.withOpacity(0.9),
-    fontSize: 14,
-  );
+  static LinearGradient getBackgroundGradient(bool isDarkMode) {
+    return LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: isDarkMode
+          ? [
+              const Color(0xFF2C2C2C),
+              const Color(0xFF1E1E1E),
+            ]
+          : [
+              primaryColor.withOpacity(0.1),
+              Colors.white,
+            ],
+    );
+  }
 }
