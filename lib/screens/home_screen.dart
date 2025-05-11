@@ -15,11 +15,13 @@ import 'chatbot_screen.dart';
 class HomeScreen extends StatefulWidget {
   final String firstName;
   final String lastName;
+  final bool isAdmin;
 
   const HomeScreen({
     Key? key,
     required this.firstName,
     required this.lastName,
+    required this.isAdmin,
   }) : super(key: key);
 
   @override
@@ -29,8 +31,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final AuthService _authService = AuthService();
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-  DateTime _currentTime = DateTime.now();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late String _firstName;
+  late String _lastName;
+  late bool _isAdmin;
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
   late Map<String, String> _phraseOfTheDay;
@@ -48,6 +52,10 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    _firstName = widget.firstName;
+    _lastName = widget.lastName;
+    _isAdmin = widget.isAdmin;
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -59,8 +67,7 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
     _animationController.forward();
-    _updateTime();
-    _loadUserData();
+
     _updatePhraseOfTheDay();
   }
 
@@ -70,20 +77,13 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  void _updateTime() {
-    setState(() {
-      _currentTime = DateTime.now();
-    });
-    Future.delayed(const Duration(minutes: 1), _updateTime);
-  }
-
   Future<void> _loadUserData() async {
     setState(() => _isLoading = true);
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('firstName', isEqualTo: widget.firstName)
-          .where('lastName', isEqualTo: widget.lastName)
+          .where('firstName', isEqualTo: _firstName)
+          .where('lastName', isEqualTo: _lastName)
           .limit(1)
           .get();
 
@@ -517,8 +517,8 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
       drawer: AppDrawer(
-        firstName: widget.firstName,
-        lastName: widget.lastName,
+        firstName: _firstName,
+        lastName: _lastName,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -535,13 +535,15 @@ class _HomeScreenState extends State<HomeScreen>
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    'Bonjour, ${widget.firstName} 👋',
+                    'Bonjour, $_firstName 👋',
                     style: HomeStyles.getTitleStyle(
                         context.watch<ThemeService>().isDarkMode),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Prêt à continuer votre apprentissage ?',
+                    _isAdmin
+                        ? 'Dashboard Administrateur'
+                        : 'Prêt à continuer votre apprentissage ?',
                     style: HomeStyles.getSubtitleStyle(
                         context.watch<ThemeService>().isDarkMode),
                   ),
