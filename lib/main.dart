@@ -26,6 +26,7 @@ import 'screens/games/memory_game.dart';
 import 'screens/games/cooking_vocab_game.dart';
 import 'screens/games/interactive_story_game.dart';
 import 'screens/games/virtual_dialogue_game.dart';
+import 'screens/attendance_history_screen.dart';
 import 'services/theme_service.dart';
 
 void main() async {
@@ -89,12 +90,21 @@ class MyApp extends StatelessWidget {
       home: const AuthPage(),
       routes: {
         '/auth': (context) => const AuthPage(),
-        '/home': (context) => const HomeScreen(firstName: '', lastName: ''),
+        '/home': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>?;
+          return HomeScreen(
+            firstName: args?['firstName'] ?? '',
+            lastName: args?['lastName'] ?? '',
+            isAdmin: args?['isAdmin'] ?? false,
+          );
+        },
         '/parametres': (context) => const ParametresScreen(),
         '/certificates': (context) => const CertificatesScreen(),
         '/languages': (context) => const LanguageSelectionScreen(),
         '/data-init': (context) => const DataInitializationScreen(),
         '/podcast': (context) => const PodcastScreen(),
+        '/attendance-history': (context) => AttendanceHistoryScreen(),
         '/camera-translation': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;

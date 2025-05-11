@@ -105,6 +105,7 @@ class _AuthScreenState extends State<AuthScreen>
                 builder: (context) => HomeScreen(
                   firstName: userData['firstName'],
                   lastName: userData['lastName'],
+                  isAdmin: false,
                 ),
               ),
             );
@@ -144,6 +145,7 @@ class _AuthScreenState extends State<AuthScreen>
               builder: (context) => HomeScreen(
                 firstName: _firstName,
                 lastName: _lastName,
+                isAdmin: false,
               ),
             ),
           );
