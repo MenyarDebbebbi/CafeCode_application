@@ -42,10 +42,11 @@ class _AuthPageState extends State<AuthPage> {
     setState(() => _isLoading = true);
 
     try {
-      if (_usernameController.text == 'admin' &&
-          _passwordController.text == 'admin') {
-        // Mettre à jour ou créer l'enregistrement admin
-        await _createAdminRecord(_usernameController.text);
+      final username = _usernameController.text;
+      final password = _passwordController.text;
+
+      if (username == 'admin' && password == 'admin') {
+        await _createAdminRecord(username);
 
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home', arguments: {
@@ -67,7 +68,10 @@ class _AuthPageState extends State<AuthPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {

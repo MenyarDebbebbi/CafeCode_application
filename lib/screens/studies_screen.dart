@@ -60,7 +60,208 @@ class _StudiesScreenState extends State<StudiesScreen>
     }
   }
 
-  Widget _buildCategoryCard(Map<String, dynamic> category) {
+  void _showAddCategoryDialog() {
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter une catégorie'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nom de la catégorie',
+                  hintText: 'Ex: Grammaire, Vocabulaire, etc.',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  hintText: 'Description de la catégorie',
+                ),
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Le nom est requis')),
+                );
+                return;
+              }
+
+              try {
+                await FirebaseFirestore.instance
+                    .collection('languages')
+                    .doc(widget.languageId)
+                    .collection('categories')
+                    .add({
+                  'name': nameController.text.trim(),
+                  'description': descriptionController.text.trim(),
+                  'lessons': [],
+                  'order': Timestamp.now().millisecondsSinceEpoch,
+                });
+
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Catégorie ajoutée avec succès'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddLessonDialog(String categoryId, List<dynamic> currentLessons) {
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
+    final TextEditingController durationController = TextEditingController();
+    int xpPoints = 50;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter une leçon'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Titre de la leçon',
+                  hintText: 'Ex: Les verbes du premier groupe',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  hintText: 'Description de la leçon',
+                ),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: durationController,
+                decoration: const InputDecoration(
+                  labelText: 'Durée (en minutes)',
+                  hintText: 'Ex: 15',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Text('Points XP: '),
+                  Slider(
+                    value: xpPoints.toDouble(),
+                    min: 10,
+                    max: 100,
+                    divisions: 9,
+                    label: xpPoints.toString(),
+                    onChanged: (value) {
+                      xpPoints = value.toInt();
+                    },
+                  ),
+                  Text(xpPoints.toString()),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (titleController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Le titre est requis')),
+                );
+                return;
+              }
+
+              try {
+                final newLesson = {
+                  'id': DateTime.now().millisecondsSinceEpoch.toString(),
+                  'title': titleController.text.trim(),
+                  'description': descriptionController.text.trim(),
+                  'duration': '${durationController.text} minutes',
+                  'xp': xpPoints,
+                  'completed': false,
+                  'progress': 0.0,
+                  'createdAt': Timestamp.now(),
+                };
+
+                final updatedLessons = [...currentLessons, newLesson];
+
+                await FirebaseFirestore.instance
+                    .collection('languages')
+                    .doc(widget.languageId)
+                    .collection('categories')
+                    .doc(categoryId)
+                    .update({'lessons': updatedLessons});
+
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Leçon ajoutée avec succès'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(Map<String, dynamic> category, String categoryId) {
     final lessons = category['lessons'] as List<dynamic>? ?? [];
     return Card(
       elevation: 4,
@@ -78,35 +279,50 @@ class _StudiesScreenState extends State<StudiesScreen>
             },
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                _getCategoryIcon(category['name']),
-                size: 48,
-                color: const Color(0xFFBE9E7E),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _getCategoryIcon(category['name']),
+                    size: 48,
+                    color: const Color(0xFFBE9E7E),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    category['name'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${lessons.length} leçons',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              Text(
-                category['name'],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+            ),
+            if (widget.isAdmin)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  color: const Color(0xFFBE9E7E),
+                  onPressed: () => _showAddLessonDialog(categoryId, lessons),
+                  tooltip: 'Ajouter une leçon',
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
-              Text(
-                '${lessons.length} leçons',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -202,56 +418,9 @@ class _StudiesScreenState extends State<StudiesScreen>
                 .orderBy('order')
                 .snapshots(),
             builder: (context, snapshot) {
-              // Ajout de débogage
-              print('Language ID: ${widget.languageId}');
-              print('Snapshot has error: ${snapshot.hasError}');
-              print('Snapshot has data: ${snapshot.hasData}');
-              if (snapshot.hasData) {
-                print('Number of categories: ${snapshot.data!.docs.length}');
-              }
               if (snapshot.hasError) {
-                print('Error details: ${snapshot.error}');
                 return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline,
-                          size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text('Erreur: ${snapshot.error}'),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          try {
-                            await _languageService.initializeLanguages();
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Données réinitialisées'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            print('Erreur lors de la réinitialisation: $e');
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Erreur: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Réessayer'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFBE9E7E),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Text('Erreur: ${snapshot.error}'),
                 );
               }
 
@@ -265,65 +434,6 @@ class _StudiesScreenState extends State<StudiesScreen>
               }
 
               final categories = snapshot.data!.docs;
-              print(
-                  'Categories data: ${categories.map((doc) => doc.data()).toList()}');
-
-              if (categories.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.category_outlined,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Aucune catégorie disponible',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          try {
-                            print('Début de l\'initialisation des langues');
-                            await _languageService.initializeLanguages();
-                            print('Langues initialisées avec succès');
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Données initialisées avec succès'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            print('Erreur lors de l\'initialisation: $e');
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Erreur: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Réinitialiser les données'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFBE9E7E),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
 
               return GridView.builder(
                 padding: const EdgeInsets.all(16),
@@ -337,69 +447,8 @@ class _StudiesScreenState extends State<StudiesScreen>
                 itemBuilder: (context, index) {
                   final category =
                       categories[index].data() as Map<String, dynamic>;
-                  final lessons = category['lessons'] as List<dynamic>? ?? [];
-
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/lessons',
-                          arguments: {
-                            'theme': category['name'],
-                            'lessons': lessons,
-                            'languageId': widget.languageId,
-                            'isAdmin': widget.isAdmin,
-                          },
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _getCategoryIcon(category['name']),
-                              size: 48,
-                              color: const Color(0xFFBE9E7E),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              category['name'] ?? 'Sans titre',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '${lessons.length} leçons',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            if (category['description'] != null)
-                              Text(
-                                category['description'],
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
+                  final categoryId = categories[index].id;
+                  return _buildCategoryCard(category, categoryId);
                 },
               );
             },
@@ -444,17 +493,10 @@ class _StudiesScreenState extends State<StudiesScreen>
       ),
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content:
-                        Text('Fonctionnalité d\'ajout de catégorie à venir'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
+              onPressed: _showAddCategoryDialog,
               backgroundColor: const Color(0xFFBE9E7E),
               child: const Icon(Icons.add),
+              tooltip: 'Ajouter une catégorie',
             )
           : null,
     );
