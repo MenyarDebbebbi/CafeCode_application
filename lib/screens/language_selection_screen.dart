@@ -19,214 +19,305 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   final LanguageService _languageService = LanguageService();
   bool _isLoading = false;
 
-  Future<void> _initializeLanguages() async {
-    setState(() {
-      _isLoading = true;
-    });
+  void _showAddLanguageDialog() {
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController flagController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
 
-    try {
-      await _languageService.initializeLanguages();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Langues initialisées avec succès !'),
-            backgroundColor: Colors.green,
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter une langue'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nom de la langue',
+                  hintText: 'Ex: Français, English, etc.',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: flagController,
+                decoration: const InputDecoration(
+                  labelText: 'Emoji drapeau',
+                  hintText: 'Ex: 🇫🇷, 🇬🇧, etc.',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  hintText: 'Description de la langue et des cours disponibles',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
           ),
-        );
-      }
-    } catch (e) {
-      print('Erreur lors de l\'initialisation : $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur lors de l\'initialisation : $e'),
-            backgroundColor: Colors.red,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
           ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.trim().isEmpty ||
+                  flagController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Veuillez remplir tous les champs requis')),
+                );
+                return;
+              }
+
+              try {
+                await FirebaseFirestore.instance.collection('languages').add({
+                  'name': nameController.text.trim(),
+                  'flag': flagController.text.trim(),
+                  'description': descriptionController.text.trim(),
+                  'createdAt': Timestamp.now(),
+                  'categories': [],
+                  'skills': [
+                    {'name': 'Débutant', 'level': 'A1'},
+                    {'name': 'Élémentaire', 'level': 'A2'},
+                    {'name': 'Intermédiaire', 'level': 'B1'},
+                    {'name': 'Avancé', 'level': 'B2'},
+                  ],
+                });
+
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Langue ajoutée avec succès'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFBE9E7E),
+            ),
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddCategoryDialog(String languageId) {
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter une catégorie'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nom de la catégorie',
+                  hintText: 'Ex: Grammaire, Vocabulaire, etc.',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                maxLines: 2,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  hintText: 'Description de la catégorie',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Le nom est requis')),
+                );
+                return;
+              }
+
+              try {
+                await FirebaseFirestore.instance
+                    .collection('languages')
+                    .doc(languageId)
+                    .collection('categories')
+                    .add({
+                  'name': nameController.text.trim(),
+                  'description': descriptionController.text.trim(),
+                  'lessons': [],
+                  'order': Timestamp.now().millisecondsSinceEpoch,
+                });
+
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Catégorie ajoutée avec succès'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFBE9E7E),
+            ),
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageCard(Map<String, dynamic> language, String languageId) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/studies',
+            arguments: {
+              'languageId': languageId,
+              'isAdmin': widget.isAdmin,
+            },
+          );
+        },
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    language['flag'] ?? '🌐',
+                    style: const TextStyle(fontSize: 48),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    language['name'] ?? 'Sans nom',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (language['description'] != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      language['description'],
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (widget.isAdmin)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  color: const Color(0xFFBE9E7E),
+                  onPressed: () => _showAddCategoryDialog(languageId),
+                  tooltip: 'Ajouter une catégorie',
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Choisir une langue',
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home, color: Colors.white),
-            onPressed: () =>
-                Navigator.of(context).pushReplacementNamed('/home'),
-          ),
-        ],
+        title: const Text('Sélection de la langue'),
         backgroundColor: const Color(0xFFBE9E7E),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('languages').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text('Erreur : ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _initializeLanguages,
-                    child: const Text('Réessayer'),
-                  ),
-                ],
-              ),
-            );
+            return Center(child: Text('Erreur: ${snapshot.error}'));
           }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          final languages = snapshot.data?.docs ?? [];
-
-          if (languages.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.language,
-                      size: 64, color: Color(0xFFBE9E7E)),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Aucune langue disponible',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Cliquez ci-dessous pour initialiser les langues',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _isLoading ? null : _initializeLanguages,
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Icon(Icons.add),
-                    label: Text(_isLoading
-                        ? 'Initialisation en cours...'
-                        : 'Initialiser les langues'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFBE9E7E),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+          final languages = snapshot.data!.docs;
 
           return GridView.builder(
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.85,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
+              childAspectRatio: 0.85,
             ),
             itemCount: languages.length,
             itemBuilder: (context, index) {
               final language = languages[index].data() as Map<String, dynamic>;
               final languageId = languages[index].id;
-
-              return Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/studies',
-                      arguments: {
-                        'languageId': languageId,
-                      },
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(15),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          language['flag'] as String,
-                          style: const TextStyle(fontSize: 48),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          language['name'] as String,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          language['description'] as String,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              return _buildLanguageCard(language, languageId);
             },
           );
         },
       ),
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fonctionnalité d\'ajout de langue à venir'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
+              onPressed: _showAddLanguageDialog,
               backgroundColor: const Color(0xFFBE9E7E),
-              child: const Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add),
+              tooltip: 'Ajouter une langue',
             )
           : null,
     );
