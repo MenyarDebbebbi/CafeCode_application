@@ -4,12 +4,14 @@ class LessonsScreen extends StatelessWidget {
   final String theme;
   final List<Map<String, dynamic>> lessons;
   final String languageId;
+  final bool isAdmin;
 
   const LessonsScreen({
     Key? key,
     required this.theme,
     required this.lessons,
     required this.languageId,
+    this.isAdmin = false,
   }) : super(key: key);
 
   @override
@@ -36,6 +38,20 @@ class LessonsScreen extends StatelessWidget {
         ],
         backgroundColor: const Color(0xFFBE9E7E),
       ),
+      floatingActionButton: isAdmin
+          ? FloatingActionButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Fonctionnalité d\'ajout de leçon à venir'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              backgroundColor: const Color(0xFFBE9E7E),
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

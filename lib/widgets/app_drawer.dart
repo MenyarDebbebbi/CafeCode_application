@@ -13,6 +13,8 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAdmin = firstName == 'Administrateur';
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -40,7 +42,11 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.school),
             title: const Text('Commencer à étudier'),
-            onTap: () => Navigator.pushReplacementNamed(context, '/languages'),
+            onTap: () => Navigator.pushReplacementNamed(
+              context,
+              '/languages',
+              arguments: {'isAdmin': isAdmin},
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.camera_alt),
@@ -55,7 +61,11 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.mic),
             title: const Text('Podcast'),
             subtitle: const Text('Écoutez et apprenez'),
-            onTap: () => Navigator.pushReplacementNamed(context, '/podcast'),
+            onTap: () => Navigator.pushReplacementNamed(
+              context,
+              '/podcast',
+              arguments: {'isAdmin': isAdmin},
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.games),

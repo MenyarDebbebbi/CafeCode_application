@@ -3,7 +3,12 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 
 class PodcastScreen extends StatefulWidget {
-  const PodcastScreen({Key? key}) : super(key: key);
+  final bool isAdmin;
+
+  const PodcastScreen({
+    Key? key,
+    required this.isAdmin,
+  }) : super(key: key);
 
   @override
   State<PodcastScreen> createState() => _PodcastScreenState();
@@ -184,6 +189,20 @@ class _PodcastScreenState extends State<PodcastScreen> {
         ],
         backgroundColor: const Color(0xFFBE9E7E),
       ),
+      floatingActionButton: widget.isAdmin
+          ? FloatingActionButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Fonctionnalité d\'ajout de podcast à venir'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              backgroundColor: const Color(0xFFBE9E7E),
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       body: Column(
         children: [
           if (_currentlyPlayingTitle != null) ...[

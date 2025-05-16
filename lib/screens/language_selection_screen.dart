@@ -3,7 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/language_service.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
-  const LanguageSelectionScreen({super.key});
+  final bool isAdmin;
+
+  const LanguageSelectionScreen({
+    super.key,
+    required this.isAdmin,
+  });
 
   @override
   State<LanguageSelectionScreen> createState() =>
@@ -210,13 +215,20 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           );
         },
       ),
-      floatingActionButton: _isLoading
-          ? null
-          : FloatingActionButton(
-              onPressed: _initializeLanguages,
+      floatingActionButton: widget.isAdmin
+          ? FloatingActionButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Fonctionnalité d\'ajout de langue à venir'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
               backgroundColor: const Color(0xFFBE9E7E),
-              child: const Icon(Icons.refresh),
-            ),
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
     );
   }
 }
