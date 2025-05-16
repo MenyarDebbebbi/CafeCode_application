@@ -79,7 +79,7 @@ class AppDrawer extends StatelessWidget {
             subtitle: const Text('Assistant linguistique'),
             onTap: () {
               Navigator.pop(context); // Ferme le drawer
-              Navigator.pushReplacementNamed(context, '/chatbot');
+              Navigator.pushReplacementNamed(context, '/chat');
             },
           ),
           ListTile(
