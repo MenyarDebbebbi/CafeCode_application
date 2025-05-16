@@ -16,6 +16,7 @@ import 'screens/camera_translation_screen.dart';
 import 'screens/podcast_screen.dart';
 import 'screens/games_screen.dart';
 import 'screens/chat_screen.dart';
+import 'screens/admin_dashboard_screen.dart';
 import 'screens/games/quiz_game.dart';
 import 'screens/games/word_search_game.dart';
 import 'screens/games/fill_blanks_game.dart';
@@ -27,7 +28,6 @@ import 'screens/games/memory_game.dart';
 import 'screens/games/cooking_vocab_game.dart';
 import 'screens/games/interactive_story_game.dart';
 import 'screens/games/virtual_dialogue_game.dart';
-import 'screens/attendance_history_screen.dart';
 import 'services/theme_service.dart';
 
 void main() async {
@@ -100,6 +100,7 @@ class MyApp extends StatelessWidget {
             isAdmin: args?['isAdmin'] ?? false,
           );
         },
+        '/admin-dashboard': (context) => const AdminDashboardScreen(),
         '/parametres': (context) => const ParametresScreen(),
         '/certificates': (context) => const CertificatesScreen(),
         '/languages': (context) {
@@ -117,7 +118,6 @@ class MyApp extends StatelessWidget {
             isAdmin: args?['isAdmin'] as bool? ?? false,
           );
         },
-        '/attendance-history': (context) => AttendanceHistoryScreen(),
         '/camera-translation': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;
