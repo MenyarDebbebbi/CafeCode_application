@@ -22,7 +22,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Duration _position = Duration.zero;
   bool _isLoading = false;
 
-  final List<Map<String, dynamic>> _podcasts = [
+  List<Map<String, dynamic>> _podcasts = [
     {
       'title': 'Les Habits Neufs de L\'Empereur',
       'description': 'Un conte classique sur la vanité et la vérité',
@@ -136,15 +136,24 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
           print('Tentative de lecture du fichier: $audioUrl');
 
-          // Vérifier si le fichier existe
-          try {
-            await rootBundle.load(audioUrl);
-          } catch (e) {
-            throw Exception('Le fichier audio n\'existe pas dans les assets');
+          // Check if the audio is from assets or URL
+          if (audioUrl.startsWith('assets/')) {
+            try {
+              await rootBundle.load(audioUrl);
+              await _audioPlayer
+                  .play(AssetSource(audioUrl.replaceAll('assets/', '')));
+            } catch (e) {
+              throw Exception('Le fichier audio n\'existe pas dans les assets');
+            }
+          } else {
+            // Handle URL audio source
+            try {
+              await _audioPlayer.play(UrlSource(audioUrl));
+            } catch (e) {
+              throw Exception('Impossible de lire l\'URL audio: $e');
+            }
           }
 
-          await _audioPlayer
-              .play(AssetSource(audioUrl.replaceAll('assets/', '')));
           setState(() {
             _currentlyPlayingTitle = title;
             _position = Duration.zero;
@@ -166,6 +175,114 @@ class _PodcastScreenState extends State<PodcastScreen> {
         ),
       );
     }
+  }
+
+  void _showAddPodcastDialog() {
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final audioUrlController = TextEditingController();
+    final authorController = TextEditingController();
+    final categoryController = TextEditingController();
+    final durationController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter un podcast'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                    labelText: 'Titre', hintText: 'Entrez le titre du podcast'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                    labelText: 'Description',
+                    hintText: 'Entrez la description du podcast'),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: audioUrlController,
+                decoration: const InputDecoration(
+                    labelText: 'URL Audio',
+                    hintText: 'Entrez l\'URL du fichier audio'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: authorController,
+                decoration: const InputDecoration(
+                    labelText: 'Auteur',
+                    hintText: 'Entrez le nom de l\'auteur'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: categoryController,
+                decoration: const InputDecoration(
+                    labelText: 'Catégorie',
+                    hintText: 'Entrez la catégorie du podcast'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: durationController,
+                decoration: const InputDecoration(
+                    labelText: 'Durée', hintText: 'Format: MM:SS (ex: 05:30)'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (titleController.text.isEmpty ||
+                  descriptionController.text.isEmpty ||
+                  audioUrlController.text.isEmpty ||
+                  authorController.text.isEmpty ||
+                  categoryController.text.isEmpty ||
+                  durationController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Veuillez remplir tous les champs'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              // Add the new podcast to the list
+              setState(() {
+                _podcasts.add({
+                  'title': titleController.text,
+                  'description': descriptionController.text,
+                  'audioUrl': audioUrlController.text,
+                  'author': authorController.text,
+                  'category': categoryController.text,
+                  'duration': durationController.text,
+                });
+              });
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Podcast ajouté avec succès'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -191,14 +308,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
       ),
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fonctionnalité d\'ajout de podcast à venir'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
+              onPressed: _showAddPodcastDialog,
               backgroundColor: const Color(0xFFBE9E7E),
               child: const Icon(Icons.add, color: Colors.white),
             )
