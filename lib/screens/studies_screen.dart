@@ -4,10 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StudiesScreen extends StatefulWidget {
   final String languageId;
+  final bool isAdmin;
 
   const StudiesScreen({
     Key? key,
     required this.languageId,
+    this.isAdmin = false,
   }) : super(key: key);
 
   @override
@@ -72,6 +74,7 @@ class _StudiesScreenState extends State<StudiesScreen>
               'theme': category['name'],
               'lessons': lessons,
               'languageId': widget.languageId,
+              'isAdmin': widget.isAdmin,
             },
           );
         },
@@ -349,6 +352,7 @@ class _StudiesScreenState extends State<StudiesScreen>
                             'theme': category['name'],
                             'lessons': lessons,
                             'languageId': widget.languageId,
+                            'isAdmin': widget.isAdmin,
                           },
                         );
                       },
@@ -438,33 +442,21 @@ class _StudiesScreenState extends State<StudiesScreen>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          try {
-            await _languageService.initializeLanguages();
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Données initialisées avec succès'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            }
-          } catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Erreur: $e'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          }
-        },
-        backgroundColor: const Color(0xFFBE9E7E),
-        child: const Icon(Icons.refresh),
-        tooltip: 'Initialiser les données',
-      ),
+      floatingActionButton: widget.isAdmin
+          ? FloatingActionButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('Fonctionnalité d\'ajout de catégorie à venir'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              backgroundColor: const Color(0xFFBE9E7E),
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }

@@ -101,9 +101,20 @@ class MyApp extends StatelessWidget {
         },
         '/parametres': (context) => const ParametresScreen(),
         '/certificates': (context) => const CertificatesScreen(),
-        '/languages': (context) => const LanguageSelectionScreen(),
+        '/languages': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>?;
+          return LanguageSelectionScreen(
+              isAdmin: args?['isAdmin'] as bool? ?? false);
+        },
         '/data-init': (context) => const DataInitializationScreen(),
-        '/podcast': (context) => const PodcastScreen(),
+        '/podcast': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>?;
+          return PodcastScreen(
+            isAdmin: args?['isAdmin'] as bool? ?? false,
+          );
+        },
         '/attendance-history': (context) => AttendanceHistoryScreen(),
         '/camera-translation': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
@@ -131,6 +142,7 @@ class MyApp extends StatelessWidget {
           return MaterialPageRoute(
             builder: (context) => StudiesScreen(
               languageId: args['languageId'] as String,
+              isAdmin: args['isAdmin'] as bool? ?? false,
             ),
           );
         }
@@ -143,6 +155,7 @@ class MyApp extends StatelessWidget {
                   .map((lesson) => Map<String, dynamic>.from(lesson as Map))
                   .toList(),
               languageId: args['languageId'] as String,
+              isAdmin: args['isAdmin'] as bool? ?? false,
             ),
           );
         }
