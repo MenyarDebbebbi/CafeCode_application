@@ -15,6 +15,7 @@ import 'screens/data_initialization_screen.dart';
 import 'screens/camera_translation_screen.dart';
 import 'screens/podcast_screen.dart';
 import 'screens/games_screen.dart';
+import 'screens/chat_screen.dart';
 import 'screens/games/quiz_game.dart';
 import 'screens/games/word_search_game.dart';
 import 'screens/games/fill_blanks_game.dart';
@@ -107,6 +108,7 @@ class MyApp extends StatelessWidget {
           return LanguageSelectionScreen(
               isAdmin: args?['isAdmin'] as bool? ?? false);
         },
+        '/chat': (context) => const ChatScreen(),
         '/data-init': (context) => const DataInitializationScreen(),
         '/podcast': (context) {
           final args = ModalRoute.of(context)!.settings.arguments

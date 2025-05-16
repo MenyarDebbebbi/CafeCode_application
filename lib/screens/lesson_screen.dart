@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 
 class LessonScreen extends StatefulWidget {
   final Map<String, dynamic> lesson;
@@ -132,7 +132,7 @@ class _LessonScreenState extends State<LessonScreen> {
         _isPlaying = false;
       });
     } else {
-      await _audioPlayer.play(AssetSource(audioUrl));
+      await _audioPlayer.setAsset(audioUrl);
       setState(() {
         _currentAudioUrl = audioUrl;
         _isPlaying = true;

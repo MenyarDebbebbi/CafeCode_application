@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class PodcastScreen extends StatefulWidget {
   final bool isAdmin;
@@ -16,6 +19,7 @@ class PodcastScreen extends StatefulWidget {
 
 class _PodcastScreenState extends State<PodcastScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isPlaying = false;
   String? _currentlyPlayingTitle;
   Duration _duration = Duration.zero;
@@ -85,28 +89,71 @@ class _PodcastScreenState extends State<PodcastScreen> {
     },
   ];
 
+  // Méthode pour sauvegarder un podcast dans Firebase
+  Future<void> _savePodcastToFirebase(Map<String, dynamic> podcast) async {
+    try {
+      await _firestore.collection('podcasts').add({
+        ...podcast,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Erreur lors de la sauvegarde du podcast: $e');
+      throw Exception('Erreur lors de la sauvegarde du podcast: $e');
+    }
+  }
+
+  // Méthode pour charger les podcasts depuis Firebase
+  Future<void> _loadPodcasts() async {
+    setState(() => _isLoading = true);
+    try {
+      final QuerySnapshot podcastsSnapshot = await _firestore
+          .collection('podcasts')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      setState(() {
+        _podcasts = podcastsSnapshot.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
+      });
+    } catch (e) {
+      print('Erreur lors du chargement des podcasts: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors du chargement des podcasts: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadPodcasts(); // Charger les podcasts au démarrage
 
-    _audioPlayer.onDurationChanged.listen((newDuration) {
+    _audioPlayer.durationStream.listen((newDuration) {
       setState(() {
-        _duration = newDuration;
+        _duration = newDuration ?? Duration.zero;
       });
     });
 
-    _audioPlayer.onPositionChanged.listen((newPosition) {
+    _audioPlayer.positionStream.listen((newPosition) {
       setState(() {
         _position = newPosition;
       });
     });
 
-    _audioPlayer.onPlayerComplete.listen((_) {
-      setState(() {
-        _isPlaying = false;
-        _position = Duration.zero;
-        _currentlyPlayingTitle = null;
-      });
+    _audioPlayer.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        setState(() {
+          _isPlaying = false;
+          _position = Duration.zero;
+          _currentlyPlayingTitle = null;
+        });
+      }
     });
   }
 
@@ -123,7 +170,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
     return '$minutes:$seconds';
   }
 
-  Future<void> _playPause(String audioUrl, String title) async {
+  Future<void> _playPause(String title, String source) async {
     try {
       if (_currentlyPlayingTitle == title && _isPlaying) {
         await _audioPlayer.pause();
@@ -131,49 +178,53 @@ class _PodcastScreenState extends State<PodcastScreen> {
           _isPlaying = false;
         });
       } else {
+        setState(() {
+          _isLoading = true;
+        });
+
         if (_currentlyPlayingTitle != title) {
-          await _audioPlayer.stop();
-
-          print('Tentative de lecture du fichier: $audioUrl');
-
-          // Check if the audio is from assets or URL
-          if (audioUrl.startsWith('assets/')) {
-            try {
-              await rootBundle.load(audioUrl);
-              await _audioPlayer
-                  .play(AssetSource(audioUrl.replaceAll('assets/', '')));
-            } catch (e) {
-              throw Exception('Le fichier audio n\'existe pas dans les assets');
-            }
+          // Si c'est un nouveau podcast, charger la nouvelle source
+          if (source.startsWith('assets/')) {
+            await _audioPlayer.setAsset(source);
           } else {
-            // Handle URL audio source
-            try {
-              await _audioPlayer.play(UrlSource(audioUrl));
-            } catch (e) {
-              throw Exception('Impossible de lire l\'URL audio: $e');
-            }
+            await _audioPlayer.setUrl(source);
           }
-
-          setState(() {
-            _currentlyPlayingTitle = title;
-            _position = Duration.zero;
-            _isPlaying = true;
-          });
-        } else {
-          await _audioPlayer.resume();
-          setState(() {
-            _isPlaying = true;
-          });
+          _currentlyPlayingTitle = title;
         }
+
+        await _audioPlayer.play();
+        setState(() {
+          _isPlaying = true;
+        });
+
+        // Écouter la position
+        _audioPlayer.positionStream.listen((position) {
+          setState(() {
+            _position = position;
+          });
+        });
+
+        // Écouter l'état de lecture
+        _audioPlayer.playerStateStream.listen((playerState) {
+          final isPlaying = playerState.playing;
+          final processingState = playerState.processingState;
+          setState(() {
+            _isPlaying = isPlaying && processingState == ProcessingState.ready;
+          });
+        });
       }
     } catch (e) {
       print('Erreur de lecture: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur de lecture: $e'),
+          content: Text('Erreur lors de la lecture: $e'),
           backgroundColor: Colors.red,
         ),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -242,7 +293,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
             child: const Text('Annuler'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (titleController.text.isEmpty ||
                   descriptionController.text.isEmpty ||
                   audioUrlController.text.isEmpty ||
@@ -258,25 +309,40 @@ class _PodcastScreenState extends State<PodcastScreen> {
                 return;
               }
 
-              // Add the new podcast to the list
-              setState(() {
-                _podcasts.add({
-                  'title': titleController.text,
-                  'description': descriptionController.text,
-                  'audioUrl': audioUrlController.text,
-                  'author': authorController.text,
-                  'category': categoryController.text,
-                  'duration': durationController.text,
-                });
-              });
+              // Créer l'objet podcast
+              final newPodcast = {
+                'title': titleController.text,
+                'description': descriptionController.text,
+                'audioUrl': audioUrlController.text,
+                'author': authorController.text,
+                'category': categoryController.text,
+                'duration': durationController.text,
+              };
 
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Podcast ajouté avec succès'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              try {
+                // Sauvegarder dans Firebase
+                await _savePodcastToFirebase(newPodcast);
+
+                // Ajouter à la liste locale
+                setState(() {
+                  _podcasts.add(newPodcast);
+                });
+
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Podcast ajouté avec succès'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur lors de l\'ajout du podcast: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: const Text('Ajouter'),
           ),
@@ -299,6 +365,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _loadPodcasts,
+          ),
+          IconButton(
             icon: const Icon(Icons.home, color: Colors.white),
             onPressed: () =>
                 Navigator.of(context).pushReplacementNamed('/home'),
@@ -313,132 +383,96 @@ class _PodcastScreenState extends State<PodcastScreen> {
               child: const Icon(Icons.add, color: Colors.white),
             )
           : null,
-      body: Column(
-        children: [
-          if (_currentlyPlayingTitle != null) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              color: const Color(0xFFBE9E7E).withOpacity(0.1),
-              child: Column(
-                children: [
-                  Text(
-                    _currentlyPlayingTitle!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(_formatDuration(_position)),
-                      Expanded(
-                        child: Slider(
-                          value: _position.inSeconds.toDouble(),
-                          min: 0,
-                          max: _duration.inSeconds.toDouble(),
-                          onChanged: (value) async {
-                            final position = Duration(seconds: value.toInt());
-                            await _audioPlayer.seek(position);
-                            setState(() {
-                              _position = position;
-                            });
-                          },
-                        ),
-                      ),
-                      Text(_formatDuration(_duration)),
-                    ],
-                  ),
-                ],
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFBE9E7E)),
               ),
-            ),
-          ],
-          Expanded(
-            child: ListView.builder(
-              itemCount: _podcasts.length,
-              itemBuilder: (context, index) {
-                final podcast = _podcasts[index];
-                final bool isPlaying =
-                    _isPlaying && _currentlyPlayingTitle == podcast['title'];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFBE9E7E).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Icon(
-                            isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: const Color(0xFFBE9E7E),
-                            size: 30,
-                          ),
-                        ),
-                        title: Text(
-                          podcast['title'],
+            )
+          : Column(
+              children: [
+                if (_currentlyPlayingTitle != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    color: const Color(0xFFBE9E7E).withOpacity(0.1),
+                    child: Column(
+                      children: [
+                        Text(
+                          _currentlyPlayingTitle!,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(podcast['description']),
-                            const SizedBox(height: 4),
-                            Wrap(
-                              spacing: 8,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFBE9E7E)
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    podcast['category'],
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFFBE9E7E),
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  '${podcast['duration']} • ${podcast['author']}',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
+                            Text(_formatDuration(_position)),
+                            Expanded(
+                              child: Slider(
+                                value: _position.inSeconds.toDouble(),
+                                min: 0,
+                                max: _duration.inSeconds.toDouble(),
+                                onChanged: (value) async {
+                                  final position =
+                                      Duration(seconds: value.toInt());
+                                  await _audioPlayer.seek(position);
+                                  setState(() {
+                                    _position = position;
+                                  });
+                                },
+                                activeColor: const Color(0xFFBE9E7E),
+                              ),
                             ),
+                            Text(_formatDuration(_duration)),
                           ],
                         ),
-                        onTap: () => _playPause(
-                          podcast['audioUrl'],
-                          podcast['title'],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                );
-              },
+                ],
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: _podcasts.length,
+                    itemBuilder: (context, index) {
+                      final podcast = _podcasts[index];
+                      final bool isPlaying =
+                          _currentlyPlayingTitle == podcast['title'];
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          title: Text(podcast['title']),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(podcast['description']),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Auteur: ${podcast['author']} • Durée: ${podcast['duration']} • Catégorie: ${podcast['category']}',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: const Color(0xFFBE9E7E),
+                            ),
+                            onPressed: () => _playPause(
+                              podcast['title'],
+                              podcast['audioUrl'],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
