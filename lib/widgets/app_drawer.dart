@@ -77,6 +77,13 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.chat),
             title: const Text('ChatBot'),
             subtitle: const Text('Assistant linguistique'),
+            trailing: IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.pop(context); // Ferme le drawer
+                Navigator.pushReplacementNamed(context, '/home');
+              },
+            ),
             onTap: () {
               Navigator.pop(context); // Ferme le drawer
               Navigator.pushReplacementNamed(context, '/chat');

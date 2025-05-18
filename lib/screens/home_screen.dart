@@ -10,8 +10,10 @@ import 'pointage_screen.dart';
 import 'parametres_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'camera_translation_screen.dart';
-import 'chatbot_screen.dart';
+import 'chat/chatbot_screen.dart';
 
+/// Écran d'accueil principal de l'application
+/// Affiche le tableau de bord de l'utilisateur avec ses statistiques et ses options
 class HomeScreen extends StatefulWidget {
   final String firstName;
   final String lastName;
@@ -30,18 +32,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+  // Services et instances
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Variables d'état
   late String _firstName;
   late String _lastName;
   late bool _isAdmin;
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
   late Map<String, String> _phraseOfTheDay;
+
+  // Contrôleurs d'animation
   late AnimationController _animationController;
   late Animation<double> _fadeInAnimation;
 
-  // Données simulées pour le développement
+  // Données de progression quotidienne
   final Map<String, dynamic> _dailyProgress = {
     'wordsLearned': 25,
     'lessonsCompleted': 3,
@@ -52,10 +59,12 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    // Initialisation des données utilisateur
     _firstName = widget.firstName;
     _lastName = widget.lastName;
     _isAdmin = widget.isAdmin;
 
+    // Configuration des animations
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -77,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  /// Charge les données utilisateur depuis Firestore
   Future<void> _loadUserData() async {
     setState(() => _isLoading = true);
     try {
@@ -99,12 +109,14 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  /// Met à jour la phrase du jour
   void _updatePhraseOfTheDay() {
     setState(() {
       _phraseOfTheDay = PhraseOfDayService.getRandomPhrase();
     });
   }
 
+  /// Gère la déconnexion de l'utilisateur
   Future<void> _signOut() async {
     setState(() => _isLoading = true);
     try {
@@ -126,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  /// Affiche le dialogue de sélection de langue pour la traduction
   void _showLanguageSelectionDialog() {
     showDialog(
       context: context,
@@ -215,6 +228,11 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  /// Construit une carte de progression personnalisée
+  /// @param title: Titre de la carte
+  /// @param value: Valeur à afficher
+  /// @param icon: Icône de la carte
+  /// @param color: Couleur de la carte
   Widget _buildProgressCard(
       String title, String value, IconData icon, Color color) {
     final isDarkMode = context.watch<ThemeService>().isDarkMode;
@@ -514,6 +532,12 @@ class _HomeScreenState extends State<HomeScreen>
               context.read<ThemeService>().toggleTheme();
             },
           ),
+          if (_isAdmin)
+            IconButton(
+              icon: const Icon(Icons.dashboard),
+              onPressed: () => Navigator.pushNamed(context, '/admin-dashboard'),
+              tooltip: 'Tableau de bord administrateur',
+            ),
         ],
       ),
       drawer: AppDrawer(
@@ -542,191 +566,203 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 8),
                   Text(
                     _isAdmin
-                        ? 'Dashboard Administrateur'
+                        ? 'Bienvenue dans votre espace administrateur'
                         : 'Prêt à continuer votre apprentissage ?',
                     style: HomeStyles.getSubtitleStyle(
                         context.watch<ThemeService>().isDarkMode),
                   ),
                   const SizedBox(height: 24),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 24),
-                    decoration: HomeStyles.mainButtonDecoration(),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.school,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Commencer à étudier',
-                                style: HomeStyles.getCardTitleStyle(
-                                    context.watch<ThemeService>().isDarkMode),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Continuez votre apprentissage',
-                                style: HomeStyles.getCardSubtitleStyle(
-                                    context.watch<ThemeService>().isDarkMode),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_forward,
+                  if (_isAdmin) ...[
+                    _buildAdminQuickActions(),
+                  ] else ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 24),
+                      decoration: HomeStyles.mainButtonDecoration(),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.school,
                             color: Colors.white,
+                            size: 32,
                           ),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/languages');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Cartes de progression
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildProgressCard(
-                          'Mots appris',
-                          _dailyProgress['wordsLearned'].toString(),
-                          Icons.book,
-                          const Color(0xFFBE9E7E),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildProgressCard(
-                          'Leçons terminées',
-                          _dailyProgress['lessonsCompleted'].toString(),
-                          Icons.school,
-                          const Color(0xFF8B7355),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildProgressCard(
-                          'Jours de série',
-                          _dailyProgress['streakDays'].toString(),
-                          Icons.local_fire_department,
-                          const Color(0xFFD4C4B7),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildProgressCard(
-                          'Objectif quotidien',
-                          '${(_dailyProgress['dailyGoalProgress'] * 100).toInt()}%',
-                          Icons.stars,
-                          const Color(0xFFA89078),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildPhraseOfTheDay(),
-                  const SizedBox(height: 24),
-                  _buildLanguageSelectionCard(),
-                  const SizedBox(height: 24),
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/studies');
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Row(
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.school, color: Color(0xFFBE9E7E)),
-                                SizedBox(width: 8),
                                 Text(
-                                  'Mes Études',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4A4A4A),
-                                  ),
+                                  'Commencer à étudier',
+                                  style: HomeStyles.getCardTitleStyle(
+                                      context.watch<ThemeService>().isDarkMode),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Continuez votre apprentissage',
+                                  style: HomeStyles.getCardSubtitleStyle(
+                                      context.watch<ThemeService>().isDarkMode),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildStudyMetric('Cours en cours', '3'),
-                                _buildStudyMetric('Exercices', '12'),
-                                _buildStudyMetric('Niveau moyen', 'B1'),
-                              ],
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/languages');
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildProgressCard(
+                            'Mots appris',
+                            _dailyProgress['wordsLearned'].toString(),
+                            Icons.book,
+                            const Color(0xFFBE9E7E),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildProgressCard(
+                            'Leçons terminées',
+                            _dailyProgress['lessonsCompleted'].toString(),
+                            Icons.school,
+                            const Color(0xFF8B7355),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  _buildPhraseOfTheDay(),
+                  const SizedBox(height: 24),
+                  if (!_isAdmin) _buildLanguageSelectionCard(),
                 ],
               ),
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ChatbotScreen(),
+      floatingActionButton: _isAdmin
+          ? FloatingActionButton.extended(
+              onPressed: () => Navigator.pushNamed(context, '/admin-dashboard'),
+              backgroundColor: HomeStyles.primaryColor,
+              icon: const Icon(Icons.dashboard_customize, color: Colors.white),
+              label: const Text(
+                'Dashboard',
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          : FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.pushNamed(context, '/chat');
+              },
+              backgroundColor: HomeStyles.primaryColor,
+              icon: const Icon(Icons.chat_bubble_outline, color: Colors.white),
+              label: const Text(
+                'Assistant',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          );
-        },
-        backgroundColor: HomeStyles.primaryColor,
-        icon: const Icon(Icons.chat_bubble_outline, color: Colors.white),
-        label: const Text(
-          'Assistant',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
     );
   }
 
-  Widget _buildStudyMetric(String label, String value) {
+  Widget _buildAdminQuickActions() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 24,
+        const Text(
+          'Actions rapides',
+          style: TextStyle(
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFFBE9E7E),
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
+        const SizedBox(height: 16),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          children: [
+            _buildQuickActionCard(
+              'Gestion des utilisateurs',
+              Icons.people,
+              Colors.blue,
+              () => Navigator.pushNamed(context, '/admin-dashboard'),
+            ),
+            _buildQuickActionCard(
+              'Gestion des contenus',
+              Icons.library_books,
+              Colors.green,
+              () => Navigator.pushNamed(context, '/data-init'),
+            ),
+            _buildQuickActionCard(
+              'Statistiques',
+              Icons.analytics,
+              Colors.orange,
+              () => Navigator.pushNamed(context, '/admin-dashboard'),
+            ),
+            _buildQuickActionCard(
+              'Paramètres',
+              Icons.settings,
+              Colors.purple,
+              () => Navigator.pushNamed(context, '/parametres'),
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  Widget _buildQuickActionCard(
+      String title, IconData icon, Color color, VoidCallback onTap) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                color.withOpacity(0.1),
+                Colors.white,
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: color),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: color.withOpacity(0.8),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

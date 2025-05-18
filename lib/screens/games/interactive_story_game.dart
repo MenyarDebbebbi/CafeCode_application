@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Jeu narratif "Histoire Interactive" qui permet aux utilisateurs de pratiquer
+/// le français à travers une histoire où ils doivent faire des choix.
+/// Le jeu propose des scènes avec plusieurs options, du vocabulaire contextuel,
+/// et un système de score basé sur les décisions prises.
 class InteractiveStoryGame extends StatefulWidget {
   const InteractiveStoryGame({Key? key}) : super(key: key);
 
@@ -7,12 +11,23 @@ class InteractiveStoryGame extends StatefulWidget {
   State<InteractiveStoryGame> createState() => _InteractiveStoryGameState();
 }
 
+/// État du jeu qui gère :
+/// - La progression à travers les scènes de l'histoire
+/// - Le score du joueur
+/// - Les choix effectués
+/// - L'affichage des traductions
 class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
-  int currentScene = 0;
-  int score = 0;
-  bool showTranslation = false;
-  List<String> choices = [];
+  // Variables d'état du jeu
+  int currentScene = 0; // Index de la scène actuelle
+  int score = 0; // Score du joueur
+  bool showTranslation = false; // Indique si les traductions sont affichées
+  List<String> choices = []; // Liste des choix effectués par le joueur
 
+  /// Structure de l'histoire interactive
+  /// Chaque scène contient :
+  /// - scene: Description de la situation (en français et anglais)
+  /// - choices: Liste des choix possibles avec leurs conséquences
+  /// - vocabulary: Liste de vocabulaire utile pour la scène
   final List<Map<String, dynamic>> story = [
     {
       'scene': {
@@ -80,6 +95,9 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
     // Ajoutez d'autres scènes ici
   ];
 
+  /// Gère l'action de retour en arrière
+  /// Affiche une boîte de dialogue de confirmation avant de quitter
+  /// @return Future<bool> true si l'utilisateur confirme, false sinon
   Future<bool> _onWillPop() async {
     return await showDialog(
           context: context,
@@ -102,6 +120,11 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
         false;
   }
 
+  /// Gère le choix effectué par l'utilisateur
+  /// - Met à jour le score
+  /// - Enregistre le choix dans l'historique
+  /// - Passe à la scène suivante ou termine l'histoire
+  /// @param choice Le choix sélectionné avec ses informations
   void makeChoice(Map<String, dynamic> choice) {
     setState(() {
       score += choice['points'] as int;
@@ -114,6 +137,8 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
     }
   }
 
+  /// Affiche le dialogue de fin d'histoire avec le score final
+  /// et le résumé des choix effectués
   void showCompletionDialog() {
     showDialog(
       context: context,
@@ -152,6 +177,7 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
     );
   }
 
+  /// Réinitialise toutes les variables du jeu pour une nouvelle histoire
   void resetStory() {
     setState(() {
       currentScene = 0;
@@ -168,6 +194,7 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        // Barre d'application avec score
         appBar: AppBar(
           title: const Text('Histoire Interactive',
               style: TextStyle(color: Colors.white)),
@@ -196,6 +223,7 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
             ),
           ],
         ),
+        // Corps du jeu avec fond dégradé
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -212,6 +240,7 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Carte de la scène actuelle
                       Card(
                         elevation: 4,
                         child: Padding(
@@ -242,6 +271,7 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
                         ),
                       ),
                       const SizedBox(height: 24),
+                      // Historique des choix
                       const Text(
                         'Vos choix:',
                         style: TextStyle(
@@ -250,51 +280,87 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
                           color: Color(0xFF4A4A4A),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
+                      if (choices.isEmpty)
+                        const Text(
+                          'Aucun choix effectué',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.grey,
+                          ),
+                        )
+                      else
+                        Text(
+                          choices.join(' → '),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF4A4A4A),
+                          ),
+                        ),
+                      const SizedBox(height: 24),
+                      // Liste des choix disponibles
                       ...currentSceneData['choices'].map<Widget>((choice) {
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            title: Text(choice['fr']),
-                            subtitle:
-                                showTranslation ? Text(choice['en']) : null,
-                            trailing: Text('+${choice['points']} pts'),
-                            onTap: () => makeChoice(choice),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: ElevatedButton(
+                            onPressed: () => makeChoice(choice),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFBE9E7E),
+                              padding: const EdgeInsets.all(16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  choice['fr'],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                if (showTranslation) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    choice['en'],
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white70,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),
                       const SizedBox(height: 24),
+                      // Section vocabulaire
                       Card(
+                        elevation: 2,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Vocabulaire:',
+                                'Vocabulaire utile:',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A4A4A),
                                 ),
                               ),
                               const SizedBox(height: 8),
                               ...currentSceneData['vocabulary']
                                   .map<Widget>((word) {
                                 return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        word['fr'],
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const Text(' - '),
-                                      Text(word['en']),
-                                    ],
+                                  padding: const EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    '${word['fr']} - ${word['en']}',
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                 );
                               }).toList(),
@@ -306,39 +372,24 @@ class _InteractiveStoryGameState extends State<InteractiveStoryGame> {
                   ),
                 ),
               ),
+              // Bouton pour afficher/masquer les traductions
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          showTranslation = !showTranslation;
-                        });
-                      },
-                      icon: Icon(
-                        showTranslation
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      label:
-                          Text(showTranslation ? 'Cacher' : 'Voir traduction'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFFBE9E7E),
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: resetStory,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Recommencer'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFBE9E7E),
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      showTranslation = !showTranslation;
+                    });
+                  },
+                  icon: Icon(
+                    showTranslation ? Icons.visibility_off : Icons.translate,
+                  ),
+                  label: Text(
+                    showTranslation ? 'Masquer traduction' : 'Voir traduction',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFBE9E7E),
+                  ),
                 ),
               ),
             ],

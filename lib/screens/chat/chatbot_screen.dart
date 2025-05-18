@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/theme_service.dart';
-import '../styles/home_styles.dart';
+import '../../services/theme_service.dart';
+import '../../styles/home_styles.dart';
 
 class ChatMessage {
   final String text;
@@ -174,6 +174,17 @@ Par exemple : 'Je veux apprendre l'alphabet en français' ou 'Je cherche des exe
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () =>
+                Navigator.pushReplacementNamed(context, '/parametres'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

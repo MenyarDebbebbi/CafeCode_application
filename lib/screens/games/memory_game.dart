@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+/// Jeu de mémoire qui permet aux utilisateurs d'associer des mots en français
+/// avec leur traduction en anglais. Le jeu utilise des cartes retournables
+/// et un système de score basé sur le temps et le nombre d'essais.
 class MemoryGame extends StatefulWidget {
   const MemoryGame({Key? key}) : super(key: key);
 
@@ -8,15 +11,23 @@ class MemoryGame extends StatefulWidget {
   State<MemoryGame> createState() => _MemoryGameState();
 }
 
+/// État du jeu de mémoire qui gère :
+/// - L'initialisation et le mélange des cartes
+/// - La logique de jeu (sélection, correspondance)
+/// - Le chronomètre et le score
+/// - Les dialogues de fin de partie
 class _MemoryGameState extends State<MemoryGame> {
-  List<MemoryCard> cards = [];
-  bool isProcessing = false;
-  int score = 0;
-  int attempts = 0;
-  MemoryCard? selectedCard;
-  Timer? timer;
-  int timeLeft = 120; // 2 minutes
+  // Variables d'état du jeu
+  List<MemoryCard> cards = []; // Liste des cartes en jeu
+  bool isProcessing = false; // Indique si une action est en cours
+  int score = 0; // Score du joueur
+  int attempts = 0; // Nombre de tentatives
+  MemoryCard? selectedCard; // Carte actuellement sélectionnée
+  Timer? timer; // Chronomètre
+  int timeLeft = 120; // Temps restant (2 minutes)
 
+  /// Liste des paires de mots français-anglais utilisées dans le jeu
+  /// Chaque paire est représentée par une Map avec les clés 'fr' et 'en'
   final List<Map<String, String>> wordPairs = [
     {'fr': 'Bonjour', 'en': 'Hello'},
     {'fr': 'Merci', 'en': 'Thank you'},
@@ -37,6 +48,9 @@ class _MemoryGameState extends State<MemoryGame> {
     startTimer();
   }
 
+  /// Démarre le chronomètre du jeu
+  /// Met à jour le temps restant chaque seconde et déclenche la fin du jeu
+  /// quand le temps est écoulé
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -50,6 +64,9 @@ class _MemoryGameState extends State<MemoryGame> {
     });
   }
 
+  /// Initialise les cartes du jeu
+  /// Crée deux cartes pour chaque paire de mots (français et anglais)
+  /// et les mélange aléatoirement
   void initializeCards() {
     List<MemoryCard> tempCards = [];
     for (var pair in wordPairs) {
@@ -70,7 +87,11 @@ class _MemoryGameState extends State<MemoryGame> {
     });
   }
 
+  /// Gère le tap sur une carte
+  /// Vérifie si la carte peut être retournée et gère la logique de correspondance
+  /// @param index: Index de la carte sélectionnée dans la liste
   void onCardTap(int index) {
+    // Vérifie si une action est possible
     if (isProcessing ||
         cards[index].isMatched ||
         cards[index] == selectedCard) {
@@ -82,12 +103,15 @@ class _MemoryGameState extends State<MemoryGame> {
     });
 
     if (selectedCard == null) {
+      // Première carte sélectionnée
       selectedCard = cards[index];
     } else {
+      // Deuxième carte sélectionnée
       isProcessing = true;
       attempts++;
 
       if (selectedCard!.pairId == cards[index].pairId) {
+        // Les cartes correspondent
         setState(() {
           selectedCard!.isMatched = true;
           cards[index].isMatched = true;
@@ -96,11 +120,13 @@ class _MemoryGameState extends State<MemoryGame> {
         selectedCard = null;
         isProcessing = false;
 
+        // Vérifie si toutes les paires ont été trouvées
         if (cards.every((card) => card.isMatched)) {
           timer?.cancel();
           showWinDialog();
         }
       } else {
+        // Les cartes ne correspondent pas
         Future.delayed(const Duration(milliseconds: 800), () {
           setState(() {
             selectedCard!.isFlipped = false;
@@ -113,6 +139,8 @@ class _MemoryGameState extends State<MemoryGame> {
     }
   }
 
+  /// Affiche le dialogue de fin de partie quand le temps est écoulé
+  /// Présente le score final et les options pour rejouer ou quitter
   void showGameOverDialog() {
     showDialog(
       context: context,
@@ -148,6 +176,8 @@ class _MemoryGameState extends State<MemoryGame> {
     );
   }
 
+  /// Affiche le dialogue de victoire quand toutes les paires sont trouvées
+  /// Présente le score, le temps restant et les options pour continuer
   void showWinDialog() {
     showDialog(
       context: context,
@@ -184,6 +214,7 @@ class _MemoryGameState extends State<MemoryGame> {
     );
   }
 
+  /// Réinitialise toutes les variables du jeu pour une nouvelle partie
   void resetGame() {
     setState(() {
       score = 0;
@@ -208,6 +239,7 @@ class _MemoryGameState extends State<MemoryGame> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        // Barre d'application avec titre et chronomètre
         appBar: AppBar(
           title:
               const Text('Memory Game', style: TextStyle(color: Colors.white)),
@@ -237,6 +269,7 @@ class _MemoryGameState extends State<MemoryGame> {
             ),
           ],
         ),
+        // Corps du jeu avec fond dégradé
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -247,82 +280,46 @@ class _MemoryGameState extends State<MemoryGame> {
           ),
           child: Column(
             children: [
+              // Score et statistiques
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildScoreCard('Score', score.toString()),
-                    _buildScoreCard('Essais', attempts.toString()),
+                    Text(
+                      'Score: $score',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Essais: $attempts',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
+              // Grille des cartes
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    childAspectRatio: 0.7,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
+                    childAspectRatio: 0.7,
                   ),
                   itemCount: cards.length,
                   itemBuilder: (context, index) => _buildCard(index),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: ElevatedButton.icon(
-                  onPressed: resetGame,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Recommencer'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFBE9E7E),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 16),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildScoreCard(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFBE9E7E),
-            ),
-          ),
-        ],
       ),
     );
   }

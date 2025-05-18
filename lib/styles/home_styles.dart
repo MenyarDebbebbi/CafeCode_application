@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 
+/// Styles pour l'écran d'accueil et les composants communs
 class HomeStyles {
   static const Color primaryColor = Color(0xFFBE9E7E);
   static const Color secondaryColor = Color(0xFF8B7355);
 
+  static LinearGradient getBackgroundGradient(bool isDarkMode) {
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: isDarkMode
+          ? [Colors.grey[900]!, Colors.grey[800]!]
+          : [const Color(0xFFFAF6F3), const Color(0xFFF5EDE6)],
+    );
+  }
+
   static TextStyle getTitleStyle(bool isDarkMode) {
     return TextStyle(
-      fontSize: 28,
+      fontSize: 24,
       fontWeight: FontWeight.bold,
       color: isDarkMode ? Colors.white : const Color(0xFF4A4A4A),
-      letterSpacing: 0.5,
     );
   }
 
@@ -21,27 +31,23 @@ class HomeStyles {
   }
 
   static TextStyle getCardTitleStyle(bool isDarkMode) {
-    return TextStyle(
+    return const TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.bold,
-      color: isDarkMode ? Colors.white : Colors.white,
+      color: Colors.white,
     );
   }
 
   static TextStyle getCardSubtitleStyle(bool isDarkMode) {
-    return TextStyle(
+    return const TextStyle(
       fontSize: 14,
-      color: isDarkMode ? Colors.white70 : Colors.white70,
+      color: Colors.white70,
     );
   }
 
   static BoxDecoration mainButtonDecoration() {
     return BoxDecoration(
-      gradient: LinearGradient(
-        colors: [primaryColor, secondaryColor],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
+      color: primaryColor,
       borderRadius: BorderRadius.circular(15),
       boxShadow: [
         BoxShadow(
@@ -71,21 +77,5 @@ class HomeStyles {
 
   static Color getBackgroundColor(bool isDarkMode) {
     return isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
-  }
-
-  static LinearGradient getBackgroundGradient(bool isDarkMode) {
-    return LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: isDarkMode
-          ? [
-              const Color(0xFF2C2C2C),
-              const Color(0xFF1E1E1E),
-            ]
-          : [
-              primaryColor.withOpacity(0.1),
-              Colors.white,
-            ],
-    );
   }
 }

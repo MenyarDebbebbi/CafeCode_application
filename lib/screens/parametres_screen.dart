@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_service.dart';
 
+/// Écran des paramètres de l'application
+/// Permet aux utilisateurs de personnaliser leur expérience
 class ParametresScreen extends StatefulWidget {
   const ParametresScreen({Key? key}) : super(key: key);
 
@@ -11,17 +13,21 @@ class ParametresScreen extends StatefulWidget {
 
 class _ParametresScreenState extends State<ParametresScreen>
     with SingleTickerProviderStateMixin {
-  bool _notificationsEnabled = true;
-  bool _soundEnabled = true;
-  bool _vibrationEnabled = true;
-  String _selectedLanguage = 'Français';
-  double _textSize = 1.0;
+  // États des paramètres
+  bool _notificationsEnabled = true; // État des notifications
+  bool _soundEnabled = true; // État des sons
+  bool _vibrationEnabled = true; // État des vibrations
+  String _selectedLanguage = 'Français'; // Langue sélectionnée
+  double _textSize = 1.0; // Taille du texte (facteur d'échelle)
+
+  // Contrôleurs d'animation
   late AnimationController _animationController;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
+    // Configuration de l'animation d'entrée
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -39,11 +45,14 @@ class _ParametresScreenState extends State<ParametresScreen>
     super.dispose();
   }
 
+  /// Construit le titre d'une section de paramètres
+  /// @param title: Titre de la section
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
+          // Barre décorative
           Container(
             width: 4,
             height: 24,
@@ -53,6 +62,7 @@ class _ParametresScreenState extends State<ParametresScreen>
             ),
           ),
           const SizedBox(width: 8),
+          // Texte du titre
           Text(
             title,
             style: const TextStyle(
@@ -66,6 +76,8 @@ class _ParametresScreenState extends State<ParametresScreen>
     );
   }
 
+  /// Construit une carte pour regrouper des paramètres
+  /// @param child: Widget enfant à afficher dans la carte
   Widget _buildCard(Widget child) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -83,6 +95,7 @@ class _ParametresScreenState extends State<ParametresScreen>
     final isDark = themeService.isDarkMode;
 
     return Scaffold(
+      // Barre d'application
       appBar: AppBar(
         title: const Text(
           'Paramètres',
@@ -94,7 +107,18 @@ class _ParametresScreenState extends State<ParametresScreen>
         ),
         backgroundColor: const Color(0xFFBE9E7E),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+          ),
+        ],
       ),
+      // Corps de l'écran avec fond dégradé
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -105,6 +129,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                 : [const Color(0xFFFAF6F3), const Color(0xFFF5EDE6)],
           ),
         ),
+        // Animation de fondu à l'entrée
         child: FadeTransition(
           opacity: _animation,
           child: SingleChildScrollView(
@@ -112,10 +137,12 @@ class _ParametresScreenState extends State<ParametresScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Section Apparence
                 _buildSectionTitle('Apparence'),
                 _buildCard(
                   Column(
                     children: [
+                      // Interrupteur du mode sombre
                       SwitchListTile(
                         title: const Text('Mode sombre'),
                         subtitle: const Text('Activer le thème sombre'),
@@ -130,6 +157,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                           color: const Color(0xFFBE9E7E),
                         ),
                       ),
+                      // Contrôle de la taille du texte
                       ListTile(
                         leading: const Icon(Icons.format_size,
                             color: Color(0xFFBE9E7E)),
@@ -150,6 +178,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                                 });
                               },
                             ),
+                            // Étiquettes des tailles de texte
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -174,10 +203,12 @@ class _ParametresScreenState extends State<ParametresScreen>
                     ],
                   ),
                 ),
+                // Section Notifications
                 _buildSectionTitle('Notifications'),
                 _buildCard(
                   Column(
                     children: [
+                      // Paramètres des notifications
                       AnimatedSwitchListTile(
                         title: 'Notifications',
                         subtitle: 'Recevoir des rappels d\'apprentissage',
@@ -190,6 +221,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                         },
                       ),
                       const Divider(height: 1),
+                      // Paramètres des sons
                       AnimatedSwitchListTile(
                         title: 'Sons',
                         subtitle: 'Activer les sons de l\'application',
@@ -202,6 +234,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                         },
                       ),
                       const Divider(height: 1),
+                      // Paramètres des vibrations
                       AnimatedSwitchListTile(
                         title: 'Vibrations',
                         subtitle: 'Activer le retour haptique',
@@ -216,10 +249,12 @@ class _ParametresScreenState extends State<ParametresScreen>
                     ],
                   ),
                 ),
+                // Section Langue et Région
                 _buildSectionTitle('Langue et Région'),
                 _buildCard(
                   Column(
                     children: [
+                      // Sélection de la langue
                       ListTile(
                         leading: const Icon(Icons.language,
                             color: Color(0xFFBE9E7E)),
@@ -229,6 +264,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                         onTap: _showLanguageDialog,
                       ),
                       const Divider(height: 1),
+                      // Sélection du fuseau horaire
                       ListTile(
                         leading: const Icon(Icons.schedule,
                             color: Color(0xFFBE9E7E)),
@@ -242,6 +278,7 @@ class _ParametresScreenState extends State<ParametresScreen>
                     ],
                   ),
                 ),
+                // Section Compte et Sécurité
                 _buildSectionTitle('Compte et Sécurité'),
                 _buildCard(
                   Column(
