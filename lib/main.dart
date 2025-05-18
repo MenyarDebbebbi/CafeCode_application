@@ -6,17 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/auth_page.dart';
 import 'screens/home_screen.dart';
 import 'screens/parametres_screen.dart';
-import 'screens/certificates_screen.dart';
-import 'screens/language_selection_screen.dart';
-import 'screens/studies_screen.dart';
-import 'screens/lessons_screen.dart';
-import 'screens/lesson_screen.dart';
+import 'screens/studies/language_selection_screen.dart';
+import 'screens/studies/studies_screen.dart';
+import 'screens/studies/lessons_screen.dart';
+import 'screens/studies/lesson_screen.dart';
 import 'screens/data_initialization_screen.dart';
 import 'screens/camera_translation_screen.dart';
-import 'screens/podcast_screen.dart';
-import 'screens/games_screen.dart';
-import 'screens/chat_screen.dart';
-import 'screens/admin_dashboard_screen.dart';
+import 'screens/podcast/podcast_screen.dart';
+import 'screens/games/games_screen.dart';
+import 'screens/chat/chat_screen.dart';
+import 'screens/admin/admin_dashboard_screen.dart';
 import 'screens/games/quiz_game.dart';
 import 'screens/games/word_search_game.dart';
 import 'screens/games/fill_blanks_game.dart';
@@ -66,6 +65,8 @@ void main() async {
   );
 }
 
+/// Widget principal de l'application
+/// Gère la configuration du thème et les routes de navigation
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -102,7 +103,6 @@ class MyApp extends StatelessWidget {
         },
         '/admin-dashboard': (context) => const AdminDashboardScreen(),
         '/parametres': (context) => const ParametresScreen(),
-        '/certificates': (context) => const CertificatesScreen(),
         '/languages': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>?;

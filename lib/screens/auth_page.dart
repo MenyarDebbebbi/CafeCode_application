@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Page d'authentification principale de l'application
+/// Gère l'authentification des administrateurs et des utilisateurs
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
 
@@ -10,20 +12,25 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  // Clés et contrôleurs pour le formulaire
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  // Services d'authentification et base de données
   final LocalAuthentication _localAuth = LocalAuthentication();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isLoading = false;
 
   @override
   void dispose() {
+    // Nettoyage des contrôleurs
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  /// Crée un enregistrement administrateur dans Firestore
   Future<void> _createAdminRecord(String username) async {
     try {
       await _firestore.collection('admins').add({
@@ -36,6 +43,8 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
+  /// Gère la connexion des administrateurs
+  /// Vérifie les identifiants et redirige vers la page d'accueil
   Future<void> _handleAdminLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -79,6 +88,7 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
+  /// Récupère les données du dernier utilisateur connecté
   Future<Map<String, dynamic>?> _getUserData() async {
     try {
       // Récupérer le dernier utilisateur enregistré
@@ -104,6 +114,8 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
+  /// Gère l'authentification biométrique
+  /// Utilise l'empreinte digitale pour authentifier l'utilisateur
   Future<void> _handleBiometricAuth() async {
     setState(() => _isLoading = true);
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import '../data/chat_responses.dart';
+import '../../data/chat_responses.dart';
 import 'dart:math' show pi, sin;
 
+/// Classe représentant un message dans le chat
+/// Contient le texte, l'origine (utilisateur ou bot) et la langue du message
 class ChatMessage {
-  final String text;
-  final bool isUser;
-  final String language;
+  final String text; // Contenu du message
+  final bool isUser; // True si le message vient de l'utilisateur
+  final String language; // Code de la langue du message
 
   ChatMessage({
     required this.text,
@@ -14,6 +16,8 @@ class ChatMessage {
   });
 }
 
+/// Écran de chat avec le bot d'assistance linguistique
+/// Permet aux utilisateurs d'interagir avec un assistant virtuel pour l'apprentissage
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -22,6 +26,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  // Contrôleurs et variables d'état
   final TextEditingController _textController = TextEditingController();
   final List<ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
@@ -31,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Ajouter le message de bienvenue
+    // Ajouter le message de bienvenue initial
     _addBotMessage(
       """Bonjour ! 👋 Je suis EchoBot, votre assistant personnel pour l'apprentissage des langues.
 
@@ -46,6 +51,8 @@ Que souhaitez-vous faire aujourd'hui ?""",
     );
   }
 
+  /// Ajoute un message du bot à la conversation
+  /// @param message: Texte du message à ajouter
   void _addBotMessage(String message) {
     setState(() {
       _messages.add(
@@ -59,6 +66,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
     _scrollToBottom();
   }
 
+  /// Fait défiler la conversation jusqu'au dernier message
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
@@ -71,6 +79,8 @@ Que souhaitez-vous faire aujourd'hui ?""",
     });
   }
 
+  /// Gère l'envoi d'un nouveau message par l'utilisateur
+  /// @param text: Texte du message envoyé
   void _handleSubmitted(String text) {
     if (text.trim().isEmpty) return;
 
@@ -107,8 +117,10 @@ Que souhaitez-vous faire aujourd'hui ?""",
     });
   }
 
+  /// Construit l'affichage d'un message dans la conversation
+  /// @param message: Message à afficher
   Widget _buildMessage(ChatMessage message) {
-    final isRTL = message.language == 'ar';
+    final isRTL = message.language == 'ar'; // Support des langues RTL (arabe)
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
       opacity: 1.0,
@@ -118,6 +130,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
           mainAxisAlignment:
               message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
+            // Avatar du bot
             if (!message.isUser)
               Container(
                 margin: const EdgeInsets.only(right: 8),
@@ -130,6 +143,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
                   ),
                 ),
               ),
+            // Bulle de message
             Flexible(
               child: Container(
                 padding:
@@ -152,6 +166,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
                     ),
                   ],
                 ),
+                // Support du texte RTL/LTR
                 child: Directionality(
                   textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                   child: Text(
@@ -164,6 +179,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
                 ),
               ),
             ),
+            // Avatar de l'utilisateur
             if (message.isUser)
               Container(
                 margin: const EdgeInsets.only(left: 8),
@@ -182,6 +198,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
     );
   }
 
+  /// Construit la zone de saisie de message
   Widget _buildTextComposer() {
     return Container(
       decoration: BoxDecoration(
@@ -203,6 +220,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
         ),
         child: Row(
           children: [
+            // Bouton emoji (à implémenter)
             IconButton(
               icon: Icon(
                 Icons.emoji_emotions_outlined,
@@ -212,6 +230,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
                 // Fonctionnalité emoji à implémenter
               },
             ),
+            // Champ de saisie
             Flexible(
               child: TextField(
                 controller: _textController,
@@ -227,6 +246,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
                 ),
               ),
             ),
+            // Bouton d'envoi
             IconButton(
               icon: Icon(
                 Icons.send,
@@ -240,6 +260,7 @@ Que souhaitez-vous faire aujourd'hui ?""",
     );
   }
 
+  /// Construit le sélecteur de langue
   Widget _buildLanguageSelector() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),

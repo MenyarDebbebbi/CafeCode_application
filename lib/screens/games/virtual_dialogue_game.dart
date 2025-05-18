@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Jeu de conversation "Dialogue Virtuel" qui simule des interactions en français
+/// dans des situations quotidiennes. Le joueur doit choisir des réponses appropriées
+/// dans différents contextes, avec un système de score basé sur la pertinence des réponses
+/// et un support de traduction pour l'apprentissage.
 class VirtualDialogueGame extends StatefulWidget {
   const VirtualDialogueGame({Key? key}) : super(key: key);
 
@@ -7,13 +11,27 @@ class VirtualDialogueGame extends StatefulWidget {
   State<VirtualDialogueGame> createState() => _VirtualDialogueGameState();
 }
 
+/// État du jeu qui gère :
+/// - La progression à travers les dialogues
+/// - Le score du joueur
+/// - L'historique de la conversation
+/// - L'affichage des traductions
+/// - Les réponses sélectionnées
 class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
-  int currentDialogue = 0;
-  int score = 0;
-  bool showTranslation = false;
-  List<String> conversation = [];
-  String? selectedResponse;
+  // Variables d'état du jeu
+  int currentDialogue = 0; // Index du dialogue actuel
+  int score = 0; // Score du joueur
+  bool showTranslation = false; // Indique si les traductions sont affichées
+  List<String> conversation = []; // Historique des échanges
+  String? selectedResponse; // Réponse actuellement sélectionnée
 
+  /// Liste des scénarios de dialogue
+  /// Chaque dialogue contient :
+  /// - character: Informations sur l'interlocuteur (nom, rôle, avatar)
+  /// - context: Description du lieu/situation (en français et anglais)
+  /// - message: Message de l'interlocuteur (en français et anglais)
+  /// - responses: Liste des réponses possibles avec leurs points et feedback
+  /// - vocabulary: Liste de vocabulaire utile pour le dialogue
   final List<Map<String, dynamic>> dialogues = [
     {
       'character': {
@@ -115,6 +133,9 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
     },
   ];
 
+  /// Gère l'action de retour en arrière
+  /// Affiche une boîte de dialogue de confirmation avant de quitter
+  /// @return Future<bool> true si l'utilisateur confirme, false sinon
   Future<bool> _onWillPop() async {
     return await showDialog(
           context: context,
@@ -137,6 +158,11 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
         false;
   }
 
+  /// Gère la sélection d'une réponse par l'utilisateur
+  /// - Met à jour le score
+  /// - Ajoute les messages à l'historique
+  /// - Passe au dialogue suivant après un délai
+  /// @param response La réponse sélectionnée avec ses informations
   void selectResponse(Map<String, dynamic> response) {
     setState(() {
       selectedResponse = response['fr'];
@@ -146,6 +172,7 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
           '${dialogues[currentDialogue]['character']['name']}: ${response['feedback']['fr']}');
     });
 
+    // Délai avant de passer au dialogue suivant
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -160,6 +187,8 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
     });
   }
 
+  /// Affiche le dialogue de fin de partie avec le score final
+  /// et les options pour rejouer ou quitter
   void showCompletionDialog() {
     showDialog(
       context: context,
@@ -196,6 +225,7 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
     );
   }
 
+  /// Réinitialise toutes les variables du jeu pour une nouvelle partie
   void resetDialogue() {
     setState(() {
       currentDialogue = 0;
@@ -213,6 +243,7 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        // Barre d'application avec score et bouton de retour
         appBar: AppBar(
           title: const Text('Dialogue Virtuel',
               style: TextStyle(color: Colors.white)),
@@ -241,6 +272,7 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
             ),
           ],
         ),
+        // Corps du jeu avec fond dégradé
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -251,6 +283,7 @@ class _VirtualDialogueGameState extends State<VirtualDialogueGame> {
           ),
           child: Column(
             children: [
+              // En-tête avec contexte et personnage
               Container(
                 padding: const EdgeInsets.all(16),
                 color: Colors.white,

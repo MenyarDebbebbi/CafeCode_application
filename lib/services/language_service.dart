@@ -7,14 +7,21 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 
+/// Service de gestion des langues
 class LanguageService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final cloudinary = CloudinaryPublic('daav4neoy', 'ml_default', cache: false);
 
-  // Récupérer toutes les langues
-  Stream<List<Language>> getLanguages() {
-    return _firestore.collection('languages').snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) => Language.fromFirestore(doc)).toList());
+  /// Récupère la liste des langues disponibles
+  Future<List<Map<String, dynamic>>> getLanguages() async {
+    final snapshot = await _firestore.collection('languages').get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Récupère les détails d'une langue
+  Future<Map<String, dynamic>?> getLanguageDetails(String languageId) async {
+    final doc = await _firestore.collection('languages').doc(languageId).get();
+    return doc.data();
   }
 
   // Récupérer une langue spécifique

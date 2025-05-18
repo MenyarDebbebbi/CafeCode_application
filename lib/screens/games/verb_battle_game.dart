@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../widgets/custom_app_bar.dart';
 
+/// Jeu de conjugaison "Bataille de Verbes" qui teste la connaissance des verbes
+/// français. Le joueur doit conjuguer correctement les verbes au temps et à la
+/// personne demandés, avec un système de score basé sur la rapidité et la précision.
 class VerbBattleGame extends StatefulWidget {
   const VerbBattleGame({Key? key}) : super(key: key);
 
@@ -9,7 +12,19 @@ class VerbBattleGame extends StatefulWidget {
   State<VerbBattleGame> createState() => _VerbBattleGameState();
 }
 
+/// État du jeu qui gère :
+/// - La progression à travers les questions de conjugaison
+/// - Le chronomètre et le score
+/// - La validation des réponses
+/// - L'affichage des résultats et des indices
 class _VerbBattleGameState extends State<VerbBattleGame> {
+  /// Liste des questions de conjugaison
+  /// Chaque question contient :
+  /// - verb: Le verbe à conjuguer
+  /// - tense: Le temps demandé
+  /// - pronoun: Le pronom personnel
+  /// - correctAnswer: La forme conjuguée correcte
+  /// - hint: Un indice sur l'utilisation du verbe
   final List<VerbQuestion> questions = [
     VerbQuestion(
       verb: 'être',
@@ -48,13 +63,15 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
     ),
   ];
 
-  int currentQuestionIndex = 0;
-  int score = 0;
-  int timeLeft = 30;
-  Timer? timer;
-  final TextEditingController _answerController = TextEditingController();
-  bool showResult = false;
-  bool? isCorrect;
+  // Variables d'état du jeu
+  int currentQuestionIndex = 0; // Index de la question actuelle
+  int score = 0; // Score du joueur
+  int timeLeft = 30; // Temps restant en secondes
+  Timer? timer; // Chronomètre du jeu
+  final TextEditingController _answerController =
+      TextEditingController(); // Contrôleur pour le champ de réponse
+  bool showResult = false; // Indique si le résultat est affiché
+  bool? isCorrect; // Indique si la dernière réponse était correcte
 
   @override
   void initState() {
@@ -62,6 +79,9 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
     startTimer();
   }
 
+  /// Démarre le chronomètre du jeu
+  /// Décompte le temps et déclenche la vérification automatique
+  /// quand le temps est écoulé
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -74,6 +94,10 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
     });
   }
 
+  /// Vérifie la réponse donnée par l'utilisateur
+  /// - Compare avec la forme conjuguée correcte
+  /// - Calcule le score en fonction du temps restant
+  /// - Affiche le résultat et passe à la question suivante
   void checkAnswer() {
     timer?.cancel();
     final currentQuestion = questions[currentQuestionIndex];
@@ -85,10 +109,12 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
       showResult = true;
       isCorrect = isAnswerCorrect;
       if (isAnswerCorrect) {
+        // Attribution des points : (temps restant × 2) + 20 points de base
         score += (timeLeft * 2) + 20;
       }
     });
 
+    // Délai avant de passer à la question suivante
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -107,6 +133,8 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
     });
   }
 
+  /// Affiche le dialogue de fin de partie avec le score final
+  /// et les options pour rejouer ou quitter
   void showGameCompleteDialog() {
     showDialog(
       context: context,
@@ -153,6 +181,7 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
     );
   }
 
+  /// Réinitialise toutes les variables du jeu pour une nouvelle partie
   void resetGame() {
     setState(() {
       currentQuestionIndex = 0;
@@ -177,6 +206,7 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
     final currentQuestion = questions[currentQuestionIndex];
 
     return Scaffold(
+      // Barre d'application personnalisée avec le score
       appBar: CustomAppBar(
         title: 'Bataille de Verbes',
         actions: [
@@ -195,6 +225,7 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
           ),
         ],
       ),
+      // Corps du jeu avec fond dégradé
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -207,6 +238,7 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // Barre de progression
               LinearProgressIndicator(
                 value: (currentQuestionIndex + 1) / questions.length,
                 backgroundColor: Colors.grey[300],
@@ -214,6 +246,7 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
                     const AlwaysStoppedAnimation<Color>(Color(0xFFBE9E7E)),
               ),
               const SizedBox(height: 24),
+              // Affichage du temps restant
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -237,6 +270,7 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
                 ),
               ),
               const SizedBox(height: 32),
+              // Carte contenant la question de conjugaison
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -255,82 +289,77 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Temps: ${currentQuestion.tense}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Pronom: ${currentQuestion.pronoun}',
+                        'au ${currentQuestion.tense} avec "${currentQuestion.pronoun}"',
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.grey,
                         ),
                       ),
                       const SizedBox(height: 24),
+                      // Champ de saisie pour la réponse
                       TextField(
                         controller: _answerController,
+                        onSubmitted: (_) => checkAnswer(),
                         decoration: InputDecoration(
                           hintText: 'Votre réponse...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.help_outline),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(currentQuestion.hint),
-                                  backgroundColor: const Color(0xFFBE9E7E),
-                                ),
-                              );
-                            },
-                          ),
+                          filled: true,
+                          fillColor: Colors.white,
                         ),
-                        onSubmitted: (_) => checkAnswer(),
+                        style: const TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 16),
-                      if (showResult)
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: isCorrect!
-                                ? Colors.green[100]
-                                : Colors.red[100],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            isCorrect!
-                                ? 'Correct ! +${(timeLeft * 2) + 20} points'
-                                : 'Incorrect. La bonne réponse était : ${currentQuestion.correctAnswer}',
-                            style: TextStyle(
-                              color: isCorrect! ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                      // Indice pour aider à la conjugaison
+                      Text(
+                        'Indice : ${currentQuestion.hint}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey,
                         ),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 32),
+              // Bouton de validation
               ElevatedButton(
-                onPressed: showResult ? null : checkAnswer,
+                onPressed: checkAnswer,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFBE9E7E),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                 ),
                 child: const Text(
                   'Valider',
                   style: TextStyle(fontSize: 18),
                 ),
               ),
+              if (showResult)
+                // Affichage du résultat
+                Container(
+                  margin: const EdgeInsets.only(top: 24),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isCorrect! ? Colors.green[100] : Colors.red[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    isCorrect!
+                        ? 'Correct ! +${(timeLeft * 2) + 20} points'
+                        : 'Incorrect. La bonne réponse était : ${currentQuestion.correctAnswer}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isCorrect! ? Colors.green : Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
             ],
           ),
         ),
@@ -339,12 +368,15 @@ class _VerbBattleGameState extends State<VerbBattleGame> {
   }
 }
 
+/// Classe représentant une question de conjugaison
+/// Contient toutes les informations nécessaires pour poser
+/// la question et vérifier la réponse
 class VerbQuestion {
-  final String verb;
-  final String tense;
-  final String pronoun;
-  final String correctAnswer;
-  final String hint;
+  final String verb; // Verbe à conjuguer
+  final String tense; // Temps demandé
+  final String pronoun; // Pronom personnel
+  final String correctAnswer; // Forme conjuguée correcte
+  final String hint; // Indice sur l'utilisation du verbe
 
   VerbQuestion({
     required this.verb,

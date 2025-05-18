@@ -3,9 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:just_audio/just_audio.dart';
 
+/// Écran de leçon individuelle
+/// Affiche le contenu d'une leçon et gère les interactions de l'utilisateur
 class LessonScreen extends StatefulWidget {
-  final Map<String, dynamic> lesson;
-  final String languageId;
+  final Map<String, dynamic> lesson; // Données de la leçon
+  final String languageId; // Identifiant de la langue
 
   const LessonScreen({
     Key? key,
@@ -18,6 +20,7 @@ class LessonScreen extends StatefulWidget {
 }
 
 class _LessonScreenState extends State<LessonScreen> {
+  // États de la leçon
   bool _isLoading = false;
   bool _lessonCompleted = false;
   bool _showQuiz = false;
@@ -25,11 +28,12 @@ class _LessonScreenState extends State<LessonScreen> {
   int _currentPage = 0;
   final List<String> _sections = ['Contenu', 'Quiz'];
 
-  // Variables pour le quiz
+  // Variables pour la gestion du quiz
   final Map<int, dynamic> _userAnswers = {};
   bool _quizSubmitted = false;
   int _score = 0;
 
+  // Lecteur audio pour les exercices sonores
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
   String? _currentAudioUrl;
@@ -41,21 +45,25 @@ class _LessonScreenState extends State<LessonScreen> {
     super.dispose();
   }
 
+  /// Marque la leçon comme terminée et met à jour Firestore
   Future<void> _markAsCompleted() async {
     setState(() => _isLoading = true);
     try {
+      // Mise à jour de l'état local
       setState(() {
         _lessonCompleted = true;
         _showQuiz = true;
         _currentPage = 1; // Passer à la page du quiz
       });
+
+      // Animation vers la page du quiz
       _pageController.animateToPage(
         1,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
 
-      // Mettre à jour le statut de la leçon dans Firestore
+      // Mise à jour dans Firestore
       await FirebaseFirestore.instance
           .collection('languages')
           .doc(widget.languageId)
@@ -78,13 +86,18 @@ class _LessonScreenState extends State<LessonScreen> {
     }
   }
 
+  /// Gère la réponse de l'utilisateur à une question du quiz
+  /// @param questionIndex: Index de la question
+  /// @param answer: Réponse de l'utilisateur
   void _handleAnswer(int questionIndex, dynamic answer) {
     setState(() {
       _userAnswers[questionIndex] = answer;
     });
   }
 
+  /// Soumet le quiz pour évaluation
   void _submitQuiz() {
+    // Validation des réponses
     if (_userAnswers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -101,10 +114,12 @@ class _LessonScreenState extends State<LessonScreen> {
     });
   }
 
+  /// Calcule le score du quiz
   void _calculateScore() {
     final questions = widget.lesson['quiz']['questions'] as List<dynamic>;
     int correctAnswers = 0;
 
+    // Vérification des réponses selon le type de question
     _userAnswers.forEach((index, userAnswer) {
       final question = questions[index] as Map<String, dynamic>;
       if (question['type'] == 'multiple_choice' ||
@@ -125,6 +140,8 @@ class _LessonScreenState extends State<LessonScreen> {
     });
   }
 
+  /// Gère la lecture des fichiers audio
+  /// @param audioUrl: URL du fichier audio à lire
   Future<void> _playAudio(String audioUrl) async {
     if (_currentAudioUrl == audioUrl && _isPlaying) {
       await _audioPlayer.pause();
@@ -140,13 +157,17 @@ class _LessonScreenState extends State<LessonScreen> {
     }
   }
 
+  /// Construit la section de contenu de la leçon
+  /// @param content: Contenu à afficher
   Widget _buildContentSection(dynamic content) {
+    // Gestion du contenu vide
     if (content == null) {
       return const Center(
         child: Text('Aucun contenu disponible'),
       );
     }
 
+    // Gestion du contenu texte simple
     if (content is String) {
       return Padding(
         padding: const EdgeInsets.all(16.0),
@@ -154,12 +175,14 @@ class _LessonScreenState extends State<LessonScreen> {
       );
     }
 
+    // Validation du format du contenu
     if (content is! List) {
       return const Center(
         child: Text('Format de contenu non valide'),
       );
     }
 
+    // Construction de la liste de contenu
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -170,6 +193,7 @@ class _LessonScreenState extends State<LessonScreen> {
           return const SizedBox.shrink();
         }
 
+        // Gestion des différents types de contenu
         final type = item['type'] as String?;
         final data = item['data'];
 

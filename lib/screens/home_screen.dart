@@ -10,8 +10,10 @@ import 'pointage_screen.dart';
 import 'parametres_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'camera_translation_screen.dart';
-import 'chatbot_screen.dart';
+import 'chat/chatbot_screen.dart';
 
+/// Écran d'accueil principal de l'application
+/// Affiche le tableau de bord de l'utilisateur avec ses statistiques et ses options
 class HomeScreen extends StatefulWidget {
   final String firstName;
   final String lastName;
@@ -30,18 +32,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+  // Services et instances
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Variables d'état
   late String _firstName;
   late String _lastName;
   late bool _isAdmin;
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
   late Map<String, String> _phraseOfTheDay;
+
+  // Contrôleurs d'animation
   late AnimationController _animationController;
   late Animation<double> _fadeInAnimation;
 
-  // Données simulées pour le développement
+  // Données de progression quotidienne
   final Map<String, dynamic> _dailyProgress = {
     'wordsLearned': 25,
     'lessonsCompleted': 3,
@@ -52,10 +59,12 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    // Initialisation des données utilisateur
     _firstName = widget.firstName;
     _lastName = widget.lastName;
     _isAdmin = widget.isAdmin;
 
+    // Configuration des animations
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -77,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  /// Charge les données utilisateur depuis Firestore
   Future<void> _loadUserData() async {
     setState(() => _isLoading = true);
     try {
@@ -99,12 +109,14 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  /// Met à jour la phrase du jour
   void _updatePhraseOfTheDay() {
     setState(() {
       _phraseOfTheDay = PhraseOfDayService.getRandomPhrase();
     });
   }
 
+  /// Gère la déconnexion de l'utilisateur
   Future<void> _signOut() async {
     setState(() => _isLoading = true);
     try {
@@ -126,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  /// Affiche le dialogue de sélection de langue pour la traduction
   void _showLanguageSelectionDialog() {
     showDialog(
       context: context,
@@ -215,6 +228,11 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  /// Construit une carte de progression personnalisée
+  /// @param title: Titre de la carte
+  /// @param value: Valeur à afficher
+  /// @param icon: Icône de la carte
+  /// @param color: Couleur de la carte
   Widget _buildProgressCard(
       String title, String value, IconData icon, Color color) {
     final isDarkMode = context.watch<ThemeService>().isDarkMode;

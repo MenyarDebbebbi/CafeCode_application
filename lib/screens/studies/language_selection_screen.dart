@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../services/language_service.dart';
+import '../../services/language_service.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   final bool isAdmin;

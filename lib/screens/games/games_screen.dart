@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Écran principal des mini-jeux éducatifs
+/// Affiche une grille de jeux disponibles avec leurs descriptions et permet
+/// aux utilisateurs de naviguer vers différents jeux éducatifs pour pratiquer
+/// la langue de manière interactive et ludique.
 class GamesScreen extends StatefulWidget {
   const GamesScreen({Key? key}) : super(key: key);
 
@@ -7,7 +11,14 @@ class GamesScreen extends StatefulWidget {
   State<GamesScreen> createState() => _GamesScreenState();
 }
 
+/// État de l'écran des jeux qui gère :
+/// - L'affichage de la grille des jeux disponibles
+/// - La navigation entre les jeux
+/// - Le suivi des points XP et de la progression
 class _GamesScreenState extends State<GamesScreen> {
+  /// Gère le comportement du bouton retour
+  /// Redirige vers l'écran d'accueil au lieu de simplement revenir en arrière
+  /// pour maintenir une navigation cohérente dans l'application
   Future<bool> _onWillPop() async {
     Navigator.of(context).pushReplacementNamed('/home');
     return false;
@@ -15,7 +26,15 @@ class _GamesScreenState extends State<GamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Liste des jeux disponibles avec leurs configurations
+    // Chaque jeu est représenté par un objet GameCard contenant :
+    // - Un titre
+    // - Une description
+    // - Une icône
+    // - Une couleur distinctive
+    // - Une action de navigation
     final List<GameCard> games = [
+      // Jeu Memory - Association de mots et images
       GameCard(
         title: 'Memory',
         description: 'Associez les mots à leurs traductions et images',
@@ -25,6 +44,8 @@ class _GamesScreenState extends State<GamesScreen> {
           Navigator.pushNamed(context, '/games/memory');
         },
       ),
+
+      // Quiz Rapide - Questions à choix multiples
       GameCard(
         title: 'Quiz Rapide',
         description: 'Testez vos connaissances avec des questions rapides',
@@ -32,6 +53,8 @@ class _GamesScreenState extends State<GamesScreen> {
         color: Colors.orange,
         onTap: () => Navigator.pushNamed(context, '/quiz_game'),
       ),
+
+      // Autres jeux éducatifs...
       GameCard(
         title: 'Mots Mêlés',
         description: 'Trouvez les mots cachés par thème',
@@ -128,6 +151,7 @@ class _GamesScreenState extends State<GamesScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        // Barre d'application avec navigation et titre
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -147,6 +171,7 @@ class _GamesScreenState extends State<GamesScreen> {
           ],
           backgroundColor: const Color(0xFFBE9E7E),
         ),
+        // Corps de l'écran avec fond dégradé et contenu
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -160,6 +185,7 @@ class _GamesScreenState extends State<GamesScreen> {
           ),
           child: Column(
             children: [
+              // Barre de progression XP avec icône et indicateur visuel
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -173,6 +199,7 @@ class _GamesScreenState extends State<GamesScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Affichage du score XP actuel
                         const Text(
                           'Points XP: 1250',
                           style: TextStyle(
@@ -181,6 +208,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             color: Color(0xFF4A4A4A),
                           ),
                         ),
+                        // Barre de progression visuelle
                         Container(
                           width: 200,
                           height: 6,
@@ -205,14 +233,15 @@ class _GamesScreenState extends State<GamesScreen> {
                   ],
                 ),
               ),
+              // Grille scrollable des jeux disponibles
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.85,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
+                    crossAxisCount: 2, // Affichage sur deux colonnes
+                    childAspectRatio: 0.85, // Ratio hauteur/largeur des cartes
+                    crossAxisSpacing: 16, // Espacement horizontal
+                    mainAxisSpacing: 16, // Espacement vertical
                   ),
                   itemCount: games.length,
                   itemBuilder: (context, index) {
@@ -228,6 +257,9 @@ class _GamesScreenState extends State<GamesScreen> {
     );
   }
 
+  /// Construit une carte de jeu interactive avec animation et style personnalisé
+  /// @param game: Configuration du jeu à afficher (titre, description, icône, couleur)
+  /// @return Widget: Carte de jeu cliquable avec effets visuels
   Widget _buildGameCard(GameCard game) {
     return Card(
       elevation: 4,
@@ -287,12 +319,15 @@ class _GamesScreenState extends State<GamesScreen> {
   }
 }
 
+/// Classe de configuration pour un jeu
+/// Contient toutes les informations nécessaires pour afficher et interagir
+/// avec un jeu dans la grille
 class GameCard {
-  final String title;
-  final String description;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
+  final String title; // Titre du jeu
+  final String description; // Description courte du jeu
+  final IconData icon; // Icône représentative
+  final Color color; // Couleur thématique
+  final VoidCallback onTap; // Action de navigation
 
   GameCard({
     required this.title,

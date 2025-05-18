@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_app_bar.dart';
 
+/// Jeu éducatif "Phrases à Trous" qui permet aux utilisateurs de pratiquer
+/// la conjugaison des verbes en français en complétant des phrases avec
+/// la forme correcte du verbe. Le jeu propose des options multiples et
+/// fournit des explications pour chaque réponse.
 class FillBlanksGame extends StatefulWidget {
   const FillBlanksGame({Key? key}) : super(key: key);
 
@@ -8,11 +12,24 @@ class FillBlanksGame extends StatefulWidget {
   State<FillBlanksGame> createState() => _FillBlanksGameState();
 }
 
+/// État du jeu qui gère :
+/// - La progression à travers les questions
+/// - Le score du joueur
+/// - L'affichage des résultats et des explications
+/// - La logique de vérification des réponses
 class _FillBlanksGameState extends State<FillBlanksGame> {
-  int currentQuestionIndex = 0;
-  int score = 0;
-  bool showResult = false;
+  // Variables d'état du jeu
+  int currentQuestionIndex = 0; // Index de la question actuelle
+  int score = 0; // Score du joueur (max 100)
+  bool showResult = false; // Indique si le résultat de la réponse est affiché
+  String? selectedAnswer; // Réponse sélectionnée par l'utilisateur
 
+  /// Liste des questions avec leurs options et explications
+  /// Chaque question contient :
+  /// - sentence: La phrase avec un espace à remplir (marqué par ____)
+  /// - options: Liste des réponses possibles
+  /// - correctAnswer: La bonne réponse
+  /// - explanation: Explication grammaticale de la réponse correcte
   final List<Map<String, dynamic>> questions = [
     {
       'sentence': 'Je ____ à la bibliothèque.',
@@ -49,8 +66,11 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
     },
   ];
 
-  String? selectedAnswer;
-
+  /// Vérifie la réponse sélectionnée par l'utilisateur
+  /// - Met à jour le score si la réponse est correcte
+  /// - Affiche l'explication
+  /// - Passe à la question suivante après un délai
+  /// @param answer La réponse sélectionnée par l'utilisateur
   void checkAnswer(String answer) {
     if (showResult) return;
 
@@ -58,11 +78,13 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
       selectedAnswer = answer;
       showResult = true;
 
+      // Attribution des points si la réponse est correcte
       if (answer == questions[currentQuestionIndex]['correctAnswer']) {
         score += 20;
       }
     });
 
+    // Délai avant de passer à la question suivante
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -78,6 +100,8 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
     });
   }
 
+  /// Affiche le dialogue de fin de partie avec le score final
+  /// et les options pour rejouer ou quitter
   void showFinalScore() {
     showDialog(
       context: context,
@@ -122,6 +146,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
     );
   }
 
+  /// Réinitialise toutes les variables du jeu pour une nouvelle partie
   void resetGame() {
     setState(() {
       currentQuestionIndex = 0;
@@ -134,9 +159,11 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
   @override
   Widget build(BuildContext context) {
     final currentQuestion = questions[currentQuestionIndex];
+    // Sépare la phrase en deux parties autour du trou à remplir
     final parts = currentQuestion['sentence'].split('____');
 
     return Scaffold(
+      // Barre d'application personnalisée avec le score
       appBar: CustomAppBar(
         title: 'Phrases à Trous',
         actions: [
@@ -155,6 +182,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
           ),
         ],
       ),
+      // Corps du jeu avec fond dégradé
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -167,6 +195,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // Barre de progression
               LinearProgressIndicator(
                 value: (currentQuestionIndex + 1) / questions.length,
                 backgroundColor: Colors.grey[300],
@@ -174,6 +203,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
                     const AlwaysStoppedAnimation<Color>(Color(0xFFBE9E7E)),
               ),
               const SizedBox(height: 24),
+              // Numéro de la question
               Text(
                 'Question ${currentQuestionIndex + 1}/${questions.length}',
                 style: const TextStyle(
@@ -183,6 +213,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
                 ),
               ),
               const SizedBox(height: 32),
+              // Carte contenant la phrase à compléter
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -213,6 +244,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
                 ),
               ),
               const SizedBox(height: 32),
+              // Carte d'explication (visible après une réponse)
               if (showResult && selectedAnswer != null)
                 Card(
                   color: selectedAnswer == currentQuestion['correctAnswer']
@@ -228,6 +260,7 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
                   ),
                 ),
               const SizedBox(height: 16),
+              // Grille des options de réponse
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -249,20 +282,14 @@ class _FillBlanksGameState extends State<FillBlanksGame> {
                         backgroundColor: showResult
                             ? (isSelected
                                 ? (isCorrect ? Colors.green : Colors.red)
-                                : (isCorrect
-                                    ? Colors.green
-                                    : const Color(0xFFBE9E7E)))
+                                : (isCorrect ? Colors.green[100] : null))
                             : const Color(0xFFBE9E7E),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        foregroundColor:
+                            showResult && isSelected ? Colors.white : null,
                       ),
                       child: Text(
                         option,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     );
                   },

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Jeu éducatif "Chef Linguiste" qui permet d'apprendre le vocabulaire culinaire
+/// français à travers des recettes interactives. Les joueurs découvrent les
+/// ingrédients et suivent les étapes de préparation en français, avec un support
+/// de traduction et un système de score.
 class CookingVocabGame extends StatefulWidget {
   const CookingVocabGame({Key? key}) : super(key: key);
 
@@ -7,11 +11,23 @@ class CookingVocabGame extends StatefulWidget {
   State<CookingVocabGame> createState() => _CookingVocabGameState();
 }
 
+/// État du jeu qui gère :
+/// - La progression à travers les étapes des recettes
+/// - Le score du joueur
+/// - L'affichage des traductions
+/// - La sélection des recettes
 class _CookingVocabGameState extends State<CookingVocabGame> {
-  int currentStep = 0;
-  int score = 0;
-  bool showTranslation = false;
+  // Variables d'état du jeu
+  int currentStep = 0; // Index de l'étape actuelle
+  int score = 0; // Score du joueur
+  bool showTranslation = false; // Indique si les traductions sont affichées
+  int currentRecipe = 0; // Index de la recette actuelle
 
+  /// Liste des recettes disponibles
+  /// Chaque recette contient :
+  /// - name: Nom de la recette
+  /// - ingredients: Liste des ingrédients avec traduction
+  /// - steps: Liste des étapes de préparation avec traduction
   final List<Map<String, dynamic>> recipes = [
     {
       'name': 'Crêpes Françaises',
@@ -44,8 +60,9 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
     // Ajoutez d'autres recettes ici
   ];
 
-  int currentRecipe = 0;
-
+  /// Passe à l'étape suivante de la recette
+  /// - Met à jour le score (+10 points par étape)
+  /// - Affiche le dialogue de fin si la recette est terminée
   void nextStep() {
     if (currentStep < recipes[currentRecipe]['steps'].length - 1) {
       setState(() {
@@ -57,6 +74,9 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
     }
   }
 
+  /// Gère l'action de retour en arrière
+  /// Affiche une boîte de dialogue de confirmation avant de quitter
+  /// @return Future<bool> true si l'utilisateur confirme, false sinon
   Future<bool> _onWillPop() async {
     return await showDialog(
           context: context,
@@ -81,6 +101,8 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
         false;
   }
 
+  /// Affiche le dialogue de fin de recette avec le score
+  /// et les options pour continuer ou quitter
   void showCompletionDialog() {
     showDialog(
       context: context,
@@ -118,6 +140,8 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
     );
   }
 
+  /// Réinitialise le jeu et passe à la recette suivante
+  /// Si c'était la dernière recette, revient à la première
   void resetGame() {
     setState(() {
       currentStep = 0;
@@ -139,6 +163,7 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        // Barre d'application avec titre
         appBar: AppBar(
           title: const Text('Chef Linguiste',
               style: TextStyle(color: Colors.white)),
@@ -154,6 +179,7 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
             },
           ),
         ),
+        // Corps du jeu avec fond dégradé
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -164,6 +190,7 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
           ),
           child: Column(
             children: [
+              // En-tête avec nom de la recette et score
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -187,12 +214,14 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
                   ],
                 ),
               ),
+              // Contenu défilant avec ingrédients et étapes
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Liste des ingrédients
                       const Text(
                         'Ingrédients:',
                         style: TextStyle(
@@ -210,11 +239,13 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
                             leading: const Icon(Icons.restaurant_menu,
                                 color: Color(0xFFBE9E7E)),
                             title: Text(ingredient['fr']),
-                            subtitle: Text(ingredient['en']),
+                            subtitle:
+                                showTranslation ? Text(ingredient['en']) : null,
                           ),
                         );
                       }).toList(),
                       const SizedBox(height: 24),
+                      // Étapes de la recette
                       const Text(
                         'Étapes:',
                         style: TextStyle(
@@ -243,17 +274,39 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
                                 currentStepData['fr'],
                                 style: const TextStyle(fontSize: 16),
                               ),
-                              const SizedBox(height: 8),
-                              if (showTranslation)
+                              if (showTranslation) ...[
+                                const SizedBox(height: 8),
                                 Text(
                                   currentStepData['en'],
                                   style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.blue,
+                                    fontSize: 14,
+                                    color: Colors.grey,
                                     fontStyle: FontStyle.italic,
                                   ),
                                 ),
+                              ],
                             ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Bouton pour passer à l'étape suivante
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: nextStep,
+                          icon: const Icon(Icons.arrow_forward),
+                          label: Text(
+                            currentStep <
+                                    recipes[currentRecipe]['steps'].length - 1
+                                ? 'Étape suivante'
+                                : 'Terminer la recette',
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFBE9E7E),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ),
@@ -261,37 +314,24 @@ class _CookingVocabGameState extends State<CookingVocabGame> {
                   ),
                 ),
               ),
+              // Bouton pour afficher/masquer les traductions
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          showTranslation = !showTranslation;
-                        });
-                      },
-                      icon: Icon(showTranslation
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                      label: Text(
-                          showTranslation ? 'Cacher' : 'Voir la traduction'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFFBE9E7E),
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: nextStep,
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Étape suivante'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFBE9E7E),
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      showTranslation = !showTranslation;
+                    });
+                  },
+                  icon: Icon(
+                    showTranslation ? Icons.visibility_off : Icons.translate,
+                  ),
+                  label: Text(
+                    showTranslation ? 'Masquer traduction' : 'Voir traduction',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFBE9E7E),
+                  ),
                 ),
               ),
             ],

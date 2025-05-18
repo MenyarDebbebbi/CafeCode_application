@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import '../../widgets/custom_app_bar.dart';
 
+/// Jeu de mots mêlés qui permet aux utilisateurs de trouver des mots cachés
+/// dans une grille de lettres. Les mots peuvent être placés horizontalement,
+/// verticalement ou en diagonale.
 class WordSearchGame extends StatefulWidget {
   const WordSearchGame({Key? key}) : super(key: key);
 
@@ -9,7 +12,13 @@ class WordSearchGame extends StatefulWidget {
   State<WordSearchGame> createState() => _WordSearchGameState();
 }
 
+/// État du jeu de mots mêlés qui gère :
+/// - La génération de la grille
+/// - Le placement des mots
+/// - La sélection des lettres
+/// - Le suivi du score et des mots trouvés
 class _WordSearchGameState extends State<WordSearchGame> {
+  // Liste des mots à trouver dans la grille
   final List<String> words = [
     'BONJOUR',
     'MERCI',
@@ -21,11 +30,11 @@ class _WordSearchGameState extends State<WordSearchGame> {
     'MAISON',
   ];
 
-  late List<List<String>> grid;
-  late List<bool> foundWords;
-  int score = 0;
-  String selectedWord = '';
-  List<int> selectedCells = [];
+  late List<List<String>> grid; // Grille de lettres
+  late List<bool> foundWords; // État des mots (trouvés ou non)
+  int score = 0; // Score du joueur
+  String selectedWord = ''; // Mot en cours de sélection
+  List<int> selectedCells = []; // Cellules sélectionnées
 
   @override
   void initState() {
@@ -35,6 +44,8 @@ class _WordSearchGameState extends State<WordSearchGame> {
     _placeWords();
   }
 
+  /// Génère une grille vide remplie de lettres aléatoires
+  /// @return Liste 2D de chaînes représentant la grille
   List<List<String>> _generateGrid() {
     const int size = 10;
     return List.generate(
@@ -46,6 +57,8 @@ class _WordSearchGameState extends State<WordSearchGame> {
     );
   }
 
+  /// Place les mots dans la grille de manière aléatoire
+  /// Les mots peuvent être placés horizontalement, verticalement ou en diagonale
   void _placeWords() {
     final random = Random();
     for (String word in words) {
@@ -66,9 +79,15 @@ class _WordSearchGameState extends State<WordSearchGame> {
     }
   }
 
+  /// Vérifie si un mot peut être placé à une position donnée dans une direction spécifique
+  /// @param word: Mot à placer
+  /// @param row: Ligne de départ
+  /// @param col: Colonne de départ
+  /// @param direction: Direction du placement (0: horizontal, 1: vertical, 2: diagonal)
+  /// @return bool: True si le mot peut être placé, False sinon
   bool _canPlaceWord(String word, int row, int col, int direction) {
     if (direction == 0) {
-      // horizontal
+      // Vérification horizontale
       if (col + word.length > grid[0].length) return false;
       for (int i = 0; i < word.length; i++) {
         if (grid[row][col + i] != word[i] &&
@@ -78,7 +97,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
         }
       }
     } else if (direction == 1) {
-      // vertical
+      // Vérification verticale
       if (row + word.length > grid.length) return false;
       for (int i = 0; i < word.length; i++) {
         if (grid[row + i][col] != word[i] &&
@@ -88,7 +107,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
         }
       }
     } else {
-      // diagonal
+      // Vérification diagonale
       if (row + word.length > grid.length || col + word.length > grid[0].length)
         return false;
       for (int i = 0; i < word.length; i++) {
@@ -102,37 +121,50 @@ class _WordSearchGameState extends State<WordSearchGame> {
     return true;
   }
 
+  /// Place un mot dans la grille à la position spécifiée
+  /// @param word: Mot à placer
+  /// @param row: Ligne de départ
+  /// @param col: Colonne de départ
+  /// @param direction: Direction du placement (0: horizontal, 1: vertical, 2: diagonal)
   void _placeWord(String word, int row, int col, int direction) {
     if (direction == 0) {
-      // horizontal
+      // Placement horizontal
       for (int i = 0; i < word.length; i++) {
         grid[row][col + i] = word[i];
       }
     } else if (direction == 1) {
-      // vertical
+      // Placement vertical
       for (int i = 0; i < word.length; i++) {
         grid[row + i][col] = word[i];
       }
     } else {
-      // diagonal
+      // Placement diagonal
       for (int i = 0; i < word.length; i++) {
         grid[row + i][col + i] = word[i];
       }
     }
   }
 
+  /// Gère la sélection d'une cellule dans la grille
+  /// Met à jour le mot en cours de sélection et vérifie s'il correspond à un mot à trouver
+  /// @param row: Ligne de la cellule sélectionnée
+  /// @param col: Colonne de la cellule sélectionnée
   void _onCellSelected(int row, int col) {
     setState(() {
       if (selectedCells.isEmpty) {
+        // Première lettre sélectionnée
         selectedCells = [row * grid.length + col];
         selectedWord = grid[row][col];
       } else {
+        // Ajout d'une nouvelle lettre
         selectedCells.add(row * grid.length + col);
         selectedWord += grid[row][col];
 
+        // Vérification si le mot est dans la liste
         if (words.contains(selectedWord)) {
           int wordIndex = words.indexOf(selectedWord);
           if (!foundWords[wordIndex]) {
+            // Mot trouvé pour la première fois
             foundWords[wordIndex] = true;
             score += selectedWord.length * 10;
             ScaffoldMessenger.of(context).showSnackBar(
@@ -145,6 +177,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
           }
         }
 
+        // Réinitialisation si la sélection est trop longue
         if (selectedWord.length >= 8) {
           selectedWord = '';
           selectedCells.clear();
@@ -153,6 +186,10 @@ class _WordSearchGameState extends State<WordSearchGame> {
     });
   }
 
+  /// Vérifie si une cellule est actuellement sélectionnée
+  /// @param row: Ligne de la cellule
+  /// @param col: Colonne de la cellule
+  /// @return bool: True si la cellule est sélectionnée, False sinon
   bool _isSelected(int row, int col) {
     return selectedCells.contains(row * grid.length + col);
   }
@@ -180,6 +217,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
       ),
       body: Column(
         children: [
+          // Grille de jeu interactive
           Expanded(
             flex: 2,
             child: GridView.builder(
@@ -220,6 +258,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
               },
             ),
           ),
+          // Liste des mots à trouver
           Container(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -249,9 +288,6 @@ class _WordSearchGameState extends State<WordSearchGame> {
                           color: foundWords[index] ? Colors.grey : Colors.black,
                         ),
                       ),
-                      backgroundColor: foundWords[index]
-                          ? Colors.grey[200]
-                          : const Color(0xFFBE9E7E).withOpacity(0.2),
                     );
                   }).toList(),
                 ),

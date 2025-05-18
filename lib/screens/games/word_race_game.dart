@@ -3,6 +3,10 @@ import 'dart:async';
 import 'dart:math';
 import '../../widgets/custom_app_bar.dart';
 
+/// Jeu de vitesse de frappe "Course aux Mots" qui teste la rapidité et la précision
+/// des utilisateurs à taper des mots en français. Le jeu propose des mots à recopier
+/// dans un temps limité, avec un système de score basé sur la longueur des mots
+/// et la précision des réponses.
 class WordRaceGame extends StatefulWidget {
   const WordRaceGame({Key? key}) : super(key: key);
 
@@ -10,8 +14,17 @@ class WordRaceGame extends StatefulWidget {
   State<WordRaceGame> createState() => _WordRaceGameState();
 }
 
+/// État du jeu qui gère :
+/// - L'affichage et la validation des mots
+/// - Le chronomètre et le score
+/// - Les tentatives de l'utilisateur
+/// - Les statistiques de performance
 class _WordRaceGameState extends State<WordRaceGame> {
+  // Contrôleur pour le champ de saisie
   final TextEditingController _controller = TextEditingController();
+
+  /// Liste des mots français à recopier
+  /// Vocabulaire de base couvrant différents thèmes de la vie quotidienne
   final List<String> words = [
     'bonjour',
     'merci',
@@ -35,12 +48,13 @@ class _WordRaceGameState extends State<WordRaceGame> {
     'montagne',
   ];
 
-  String currentWord = '';
-  int score = 0;
-  int timeLeft = 60;
-  Timer? timer;
-  bool isGameActive = false;
-  List<WordAttempt> attempts = [];
+  // Variables d'état du jeu
+  String currentWord = ''; // Mot actuellement affiché
+  int score = 0; // Score du joueur
+  int timeLeft = 60; // Temps restant en secondes
+  Timer? timer; // Chronomètre du jeu
+  bool isGameActive = false; // Indique si une partie est en cours
+  List<WordAttempt> attempts = []; // Liste des tentatives de l'utilisateur
 
   @override
   void dispose() {
@@ -49,6 +63,10 @@ class _WordRaceGameState extends State<WordRaceGame> {
     super.dispose();
   }
 
+  /// Démarre une nouvelle partie
+  /// - Réinitialise le score et le temps
+  /// - Sélectionne un premier mot
+  /// - Lance le chronomètre
   void startGame() {
     setState(() {
       score = 0;
@@ -69,6 +87,10 @@ class _WordRaceGameState extends State<WordRaceGame> {
     });
   }
 
+  /// Termine la partie en cours
+  /// - Arrête le chronomètre
+  /// - Affiche le dialogue de fin avec les statistiques
+  /// - Propose de rejouer ou de quitter
   void endGame() {
     timer?.cancel();
     setState(() {
@@ -123,11 +145,14 @@ class _WordRaceGameState extends State<WordRaceGame> {
     );
   }
 
+  /// Calcule la vitesse moyenne de frappe en mots par minute
+  /// Ne prend en compte que les mots correctement tapés
   double _calculateAverageSpeed() {
     if (attempts.isEmpty) return 0;
     return (attempts.where((a) => a.isCorrect).length / 60) * 60;
   }
 
+  /// Sélectionne un nouveau mot aléatoire différent du mot actuel
   void _selectNewWord() {
     final random = Random();
     String newWord;
@@ -140,6 +165,11 @@ class _WordRaceGameState extends State<WordRaceGame> {
     });
   }
 
+  /// Vérifie le mot saisi par l'utilisateur
+  /// - Compare avec le mot à recopier
+  /// - Met à jour le score (+5 points par lettre si correct, -5 points si incorrect)
+  /// - Enregistre la tentative dans l'historique
+  /// @param input Le mot saisi par l'utilisateur
   void _checkWord(String input) {
     if (!isGameActive) return;
 
@@ -165,6 +195,7 @@ class _WordRaceGameState extends State<WordRaceGame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Barre d'application personnalisée avec le score
       appBar: CustomAppBar(
         title: 'Course aux Mots',
         actions: [
@@ -183,6 +214,7 @@ class _WordRaceGameState extends State<WordRaceGame> {
           ),
         ],
       ),
+      // Corps du jeu avec fond dégradé
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -195,6 +227,7 @@ class _WordRaceGameState extends State<WordRaceGame> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // Bouton de démarrage (visible uniquement si le jeu n'est pas actif)
               if (!isGameActive)
                 Center(
                   child: ElevatedButton(
@@ -215,6 +248,7 @@ class _WordRaceGameState extends State<WordRaceGame> {
               else
                 Column(
                   children: [
+                    // Affichage du temps restant
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -238,6 +272,7 @@ class _WordRaceGameState extends State<WordRaceGame> {
                       ),
                     ),
                     const SizedBox(height: 32),
+                    // Carte affichant le mot à recopier
                     Card(
                       elevation: 4,
                       shape: RoundedRectangleBorder(
@@ -248,7 +283,7 @@ class _WordRaceGameState extends State<WordRaceGame> {
                         child: Text(
                           currentWord,
                           style: const TextStyle(
-                            fontSize: 32,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
@@ -256,10 +291,11 @@ class _WordRaceGameState extends State<WordRaceGame> {
                       ),
                     ),
                     const SizedBox(height: 32),
+                    // Champ de saisie pour taper le mot
                     TextField(
                       controller: _controller,
-                      autofocus: true,
                       onSubmitted: _checkWord,
+                      autofocus: true,
                       decoration: InputDecoration(
                         hintText: 'Tapez le mot ici...',
                         border: OutlineInputBorder(
@@ -268,43 +304,36 @@ class _WordRaceGameState extends State<WordRaceGame> {
                         filled: true,
                         fillColor: Colors.white,
                       ),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 32),
+                    // Liste des dernières tentatives
+                    Expanded(
+                      child: Card(
+                        child: ListView.builder(
+                          itemCount: attempts.length,
+                          reverse: true,
+                          itemBuilder: (context, index) {
+                            final attempt =
+                                attempts[attempts.length - 1 - index];
+                            return ListTile(
+                              leading: Icon(
+                                attempt.isCorrect
+                                    ? Icons.check_circle
+                                    : Icons.error,
+                                color: attempt.isCorrect
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                              title: Text(attempt.word),
+                              subtitle: Text(attempt.userInput),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: attempts.length,
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      final attempt = attempts[attempts.length - 1 - index];
-                      return ListTile(
-                        leading: Icon(
-                          attempt.isCorrect ? Icons.check_circle : Icons.close,
-                          color: attempt.isCorrect ? Colors.green : Colors.red,
-                        ),
-                        title: Text(attempt.word),
-                        subtitle: Text(attempt.userInput),
-                        trailing: Text(
-                          attempt.isCorrect
-                              ? '+${attempt.word.length * 5}'
-                              : '-5',
-                          style: TextStyle(
-                            color:
-                                attempt.isCorrect ? Colors.green : Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -313,11 +342,14 @@ class _WordRaceGameState extends State<WordRaceGame> {
   }
 }
 
+/// Classe représentant une tentative de l'utilisateur
+/// Stocke les informations sur le mot à recopier, la saisie de l'utilisateur,
+/// si la tentative était correcte et le moment où elle a été effectuée
 class WordAttempt {
-  final String word;
-  final String userInput;
-  final bool isCorrect;
-  final DateTime timeStamp;
+  final String word; // Mot à recopier
+  final String userInput; // Saisie de l'utilisateur
+  final bool isCorrect; // Indique si la saisie était correcte
+  final DateTime timeStamp; // Moment de la tentative
 
   WordAttempt({
     required this.word,

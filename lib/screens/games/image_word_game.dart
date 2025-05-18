@@ -4,6 +4,10 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'dart:io';
 import 'package:translator/translator.dart';
 
+/// Jeu éducatif "Images et Mots" qui utilise la reconnaissance d'image et la traduction
+/// pour aider à l'apprentissage du vocabulaire français. Les joueurs prennent des photos
+/// d'objets, le jeu reconnaît le texte en anglais et les joueurs doivent donner
+/// la traduction correcte en français.
 class ImageWordGame extends StatefulWidget {
   const ImageWordGame({Key? key}) : super(key: key);
 
@@ -11,17 +15,26 @@ class ImageWordGame extends StatefulWidget {
   State<ImageWordGame> createState() => _ImageWordGameState();
 }
 
+/// État du jeu qui gère :
+/// - La capture et le traitement des photos
+/// - La reconnaissance de texte avec ML Kit
+/// - La traduction avec l'API Google Translate
+/// - La validation des réponses et le score
 class _ImageWordGameState extends State<ImageWordGame> {
-  final ImagePicker _picker = ImagePicker();
-  final TextRecognizer _textRecognizer = TextRecognizer();
-  final translator = GoogleTranslator();
+  // Services et contrôleurs
+  final ImagePicker _picker = ImagePicker(); // Service de capture d'image
+  final TextRecognizer _textRecognizer =
+      TextRecognizer(); // Service de reconnaissance de texte
+  final translator = GoogleTranslator(); // Service de traduction
+  TextEditingController _answerController =
+      TextEditingController(); // Contrôleur pour la réponse
 
-  File? _imageFile;
-  String _detectedText = '';
-  String _translation = '';
-  bool _isProcessing = false;
-  int _score = 0;
-  TextEditingController _answerController = TextEditingController();
+  // Variables d'état du jeu
+  File? _imageFile; // Image capturée
+  String _detectedText = ''; // Texte reconnu dans l'image
+  String _translation = ''; // Traduction française du texte
+  bool _isProcessing = false; // Indique si une opération est en cours
+  int _score = 0; // Score du joueur
 
   @override
   void dispose() {
@@ -30,6 +43,10 @@ class _ImageWordGameState extends State<ImageWordGame> {
     super.dispose();
   }
 
+  /// Capture une photo avec l'appareil photo
+  /// - Initialise la reconnaissance de texte
+  /// - Traduit le texte reconnu en français
+  /// - Gère les erreurs potentielles
   Future<void> _takePhoto() async {
     setState(() {
       _isProcessing = true;
@@ -38,6 +55,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
     });
 
     try {
+      // Capture de la photo
       final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
       if (photo == null) {
         setState(() => _isProcessing = false);
@@ -46,13 +64,13 @@ class _ImageWordGameState extends State<ImageWordGame> {
 
       setState(() => _imageFile = File(photo.path));
 
-      // Reconnaissance du texte
+      // Reconnaissance du texte avec ML Kit
       final inputImage = InputImage.fromFile(_imageFile!);
       final RecognizedText recognizedText =
           await _textRecognizer.processImage(inputImage);
 
       if (recognizedText.text.isNotEmpty) {
-        // Traduire le texte en français
+        // Traduction du texte en français
         final translation = await translator.translate(
           recognizedText.text,
           from: 'auto',
@@ -73,6 +91,10 @@ class _ImageWordGameState extends State<ImageWordGame> {
     }
   }
 
+  /// Vérifie la réponse donnée par l'utilisateur
+  /// - Compare avec la traduction correcte
+  /// - Met à jour le score (+10 points si correct)
+  /// - Affiche un message de feedback
   void _checkAnswer() {
     final userAnswer = _answerController.text.trim().toLowerCase();
     final correctAnswer = _translation.toLowerCase();
@@ -100,6 +122,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Barre d'application avec score
       appBar: AppBar(
         title:
             const Text('Images et Mots', style: TextStyle(color: Colors.white)),
@@ -124,6 +147,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
           ),
         ],
       ),
+      // Corps du jeu avec fond dégradé
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -137,6 +161,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Carte d'instructions et bouton photo
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -169,6 +194,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
                   ),
                 ),
               ),
+              // Affichage de l'image capturée
               if (_imageFile != null) ...[
                 const SizedBox(height: 16),
                 Card(
@@ -182,6 +208,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
                   ),
                 ),
               ],
+              // Champ de réponse (visible après reconnaissance du texte)
               if (_detectedText.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Card(
@@ -216,6 +243,7 @@ class _ImageWordGameState extends State<ImageWordGame> {
           ),
         ),
       ),
+      // Bouton flottant pour prendre une photo rapidement
       floatingActionButton: FloatingActionButton(
         onPressed: _takePhoto,
         backgroundColor: const Color(0xFFBE9E7E),

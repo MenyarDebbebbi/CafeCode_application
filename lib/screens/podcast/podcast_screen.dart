@@ -28,57 +28,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   List<Map<String, dynamic>> _podcasts = [
     {
-      'title': 'Les Habits Neufs de L\'Empereur',
-      'description': 'Un conte classique sur la vanité et la vérité',
-      'duration': '05:21',
-      'author': 'Parlez-Vous French',
-      'audioUrl':
-          'assets/audio/Les-Habits-Neufs-de-L-Empereur-Parlez-Vous-French.com_.mp3',
-      'category': 'Contes Classiques'
-    },
-    {
-      'title': 'L\'Âne Merveille',
-      'description': 'Une histoire magique pleine de surprises',
-      'duration': '06:22',
-      'author': 'Parlez-Vous French',
-      'audioUrl': 'assets/audio/Ane-Merveille-Parlez-Vous-French.com_.mp3',
-      'category': 'Contes Magiques'
-    },
-    {
-      'title': 'La Conquête',
-      'description': 'Une histoire de Louis Hémon',
-      'duration': '10:03',
-      'author': 'Louis Hémon',
-      'audioUrl':
-          'assets/audio/La-Conquete-Louis-Hémon-Parlez-Vous-French.com_.mp3',
-      'category': 'Littérature'
-    },
-    {
-      'title': 'L\'Amour D\'Une Mère',
-      'description': 'Une touchante histoire sur l\'amour maternel',
-      'duration': '04:37',
-      'author': 'Parlez-Vous French',
-      'audioUrl': 'assets/audio/LAmour-DUne-Mère-Parlez-Vous-French.com_.mp3',
-      'category': 'Histoires de Vie'
-    },
-    {
-      'title': 'Le Vrai Héritier',
-      'description': 'Une histoire sur la justice et la vérité',
-      'duration': '03:48',
-      'author': 'Parlez-Vous French',
-      'audioUrl': 'assets/audio/Le-Vrai-Héritier-Parlez-vous-French.mp3',
-      'category': 'Contes Moraux'
-    },
-    {
-      'title': 'La Vérité et le Mensonge',
-      'description': 'Un conte africain de Souleymane Mbodj',
-      'duration': '01:43',
-      'author': 'Souleymane Mbodj',
-      'audioUrl':
-          'assets/audio/La-Vérité-et-le-Mensonge-Souleymane-Mbodj-Parlez-Vous-French.com_.mp3',
-      'category': 'Contes Africains'
-    },
-    {
       'title': 'Le Secret',
       'description': 'Une histoire mystérieuse de Souleymane Mbodj',
       'duration': '05:34',
